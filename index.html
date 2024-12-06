@@ -87,6 +87,7 @@
 			--foreground: 236 40% 15%; /** PURPLISH **/
 			--border: 236 40% 15%; /** PURPLISH **/
 
+			--step--2: clamp(0.7035rem, 0.5993rem + 0.5207vw, 1.12rem);
 			--step--1: clamp(0.9377rem, 0.8222rem + 0.5778vw, 1.4rem);
 			--step-0: clamp(1.25rem, 1.125rem + 0.625vw, 1.75rem);
 			--step-1: clamp(1.6663rem, 1.5359rem + 0.6516vw, 2.1875rem);
@@ -150,6 +151,13 @@
 				height: 100%;
 			}
 		}
+
+		.smaller-text {
+			font-size: var(--step--1);
+		}
+		.smallest-text {
+			font-size: var(--step--2);
+		}
 	</style>
 	<script defer src="/vendor/liquid@10.19.0.browser.min.js"></script>
 	<script defer src="/vendor/papaparse@5.4.1.min.js"></script>
@@ -157,27 +165,33 @@
 	<script defer src="/vendor/alpine-focus@3.4.16.min.js"></script>
 	<script defer src="/vendor/alpinejs@3.14.6.min.js"></script>
 </head>
-<body x-data="{}">
+<body x-data="App()">
 	<!-- LEFT COLUMN -->
 	<section id="left">
-		<details open>
-			<summary><div><span>01. DATA</span> <span>Paste your data here</span></div></summary>
-			<div>Est ligula condimentum varius molestie posuere lorem sagittis praesent cras sit cursus facilisi porttitor, mollis at dapibus massa accumsan natoque tristique tellus elit tempor dignissim. Quisque faucibus hac ut massa vel diam sagittis ac facilisi dui consectetur lorem mattis iaculis et, pellentesque pharetra nullam torquent ullamcorper taciti euismod conubia integer porttitor curabitur vulputate dictum maecenas. Duis fringilla volutpat suscipit commodo molestie augue placerat consequat, himenaeos mi lacus ad malesuada suspendisse integer justo, rhoncus feugiat risus est elit potenti magna. Egestas fames ligula aptent ullamcorper dapibus, luctus sagittis donec nibh. Tortor class etiam torquent commodo iaculis suspendisse feugiat dignissim risus curae leo dui viverra taciti, ac per diam quisque facilisi laoreet sollicitudin accumsan varius dolor platea fusce. Facilisi massa sem nullam fermentum dolor rhoncus, himenaeos ante aenean duis vel viverra vestibulum, bibendum imperdiet dui elit non. Ipsum elementum adipiscing sodales tristique ullamcorper duis viverra commodo cubilia parturient sollicitudin egestas purus inceptos urna, interdum vel pretium sociosqu quam turpis sapien taciti odio consectetur facilisis euismod montes nostra.
-
-				Curae malesuada condimentum fermentum bibendum mi justo primis class tempor volutpat ullamcorper, tellus duis cubilia litora curabitur consectetur purus odio urna. Suscipit et purus molestie fermentum risus litora aliquet ipsum eros ac blandit donec mi etiam, porttitor mus ridiculus maecenas dictumst euismod malesuada elit integer dapibus tempor hac venenatis. Class tristique ipsum erat euismod in commodo taciti ex mus, pellentesque elit orci rutrum dapibus consectetur vel egestas, vivamus nulla mollis pretium dui natoque tempus quisque. Mollis ultricies ornare pretium curabitur mattis nam fermentum lobortis inceptos dui in curae, suspendisse convallis massa sagittis justo ut natoque magnis sodales nullam. Mi ullamcorper augue nostra metus cras luctus accumsan etiam primis purus, aptent nulla elementum adipiscing nec vehicula in magna per orci, sociosqu ad consequat sem lacus fermentum fringilla netus habitasse. Nulla accumsan sagittis felis aptent potenti ex taciti tortor urna vehicula, fermentum imperdiet class faucibus mattis condimentum dignissim mi ante. Maecenas tellus quam mus varius viverra scelerisque fames ultricies, aliquet euismod bibendum litora suscipit class congue. Curae facilisis dis mus tortor vivamus elit massa aliquam, sollicitudin nisi sit cras tempor posuere lectus placerat quisque, integer laoreet in sed sodales aenean erat.
-
-				Cras dictumst est leo consectetur id suscipit erat justo magnis velit aenean eros blandit, fermentum iaculis mus interdum primis turpis luctus phasellus habitasse pharetra felis nullam. Morbi ipsum magna erat lacus ex ante orci curabitur condimentum sit interdum mollis tempor, ligula dis praesent pellentesque varius quisque laoreet commodo ad quam sociosqu. Conubia egestas platea sed rhoncus elit habitasse mattis leo at sit augue facilisi, litora pharetra iaculis torquent ac quam donec ipsum fermentum accumsan dapibus. Adipiscing tempus fusce mus pretium eleifend ornare quisque posuere lorem, nam blandit nec cras montes mi elementum. Montes ligula volutpat magna viverra finibus primis semper vel, ipsum ornare suspendisse adipiscing molestie diam lectus maecenas dapibus, platea nec dictum consequat dui imperdiet condimentum. Lectus nam elit hac ac sagittis suspendisse elementum scelerisque, mattis inceptos augue egestas tempor laoreet duis amet lacus, dis enim bibendum condimentum pretium odio cubilia. Ligula erat convallis mi enim nostra diam lobortis risus velit ac efficitur bibendum, tristique nam curabitur tincidunt faucibus hendrerit magnis id aptent mus senectus.</div>
+		<details x-bind="leftColumnSection" open>
+			<summary><div><span>0. MATRIX PRINTER</span> <span>About & info</span></div></summary>
+			<div>Ahoy!</div>
 		</details>
-		<details>
-			<summary><div><span>02. FUNCTIONS</span> <span>Edit your additional functions here</span></div></summary>
+		<details x-bind="leftColumnSection" open>
+			<summary><div><span>1. DATA</span> <span>Paste your data here</span></div></summary>
+			<div>
+				<div x-data="$prism({language:'plain'})" class="smallest-text">
+
+
+
+				</div>
+			</div>
+		</details>
+		<details x-bind="leftColumnSection">
+			<summary><div><span>2. FUNCTIONS</span> <span>Edit your additional functions here</span></div></summary>
 			<div>Suscipit praesent aptent dictum id tempus vitae ex mi lobortis euismod feugiat, imperdiet natoque est mus quis facilisi fames platea elementum sodales. Nulla class mus semper posuere nisi condimentum eleifend felis ante ex dignissim lectus turpis, maecenas fusce himenaeos dictumst sit leo habitant vitae efficitur tincidunt lacinia. Dictum litora amet per penatibus nibh imperdiet ante ex dictumst rhoncus senectus, eleifend vestibulum erat commodo vivamus torquent aptent lobortis mus.
 
 				Dolor aliquet netus felis parturient tristique vulputate adipiscing pulvinar luctus quam himenaeos, tellus ornare facilisi dictum ridiculus vestibulum consectetur lacinia ullamcorper. Id eros sollicitudin a quis penatibus inceptos hendrerit mus imperdiet quisque laoreet elit, sodales finibus euismod augue vehicula tellus mauris ornare neque morbi. Vulputate senectus penatibus fusce class tortor sit ut dapibus fringilla quam, pulvinar pharetra augue habitant turpis tempor luctus imperdiet. Dictum primis lobortis pharetra consequat fermentum viverra morbi ligula dignissim nullam habitasse, elit hac phasellus platea dolor ac vel netus litora commodo. Arcu donec aenean a nulla fermentum fringilla nibh gravida odio etiam orci consequat sociosqu auctor, congue feugiat elit parturient non libero phasellus vivamus duis litora blandit interdum. Efficitur ad tempor enim tincidunt praesent sollicitudin at orci felis aptent varius, volutpat mollis sodales in aliquet donec habitasse nisl diam.
 
 				Netus maecenas ultricies etiam orci est hac eros dolor dictumst potenti, vehicula malesuada sollicitudin sit parturient eget id ad erat, risus nascetur felis montes eu volutpat justo habitant adipiscing. Himenaeos laoreet consequat venenatis massa morbi dictumst consectetur class cras senectus conubia suspendisse cubilia tellus turpis vitae, mattis eu maecenas praesent neque hendrerit finibus orci phasellus fusce sit vulputate sed condimentum. Sem sagittis potenti maecenas faucibus amet pretium venenatis facilisis, eu ipsum sit egestas nec augue neque, dis nullam at massa vitae id laoreet. Sed id volutpat ex risus mollis auctor consectetur praesent vitae duis elementum aliquam amet a, tortor vestibulum nam sit viverra nec ridiculus imperdiet massa ornare turpis nostra facilisi. Ad efficitur viverra consequat auctor risus quam ullamcorper faucibus sem ac tristique malesuada tempus adipiscing, turpis fames mollis tellus dictumst commodo ligula finibus pharetra senectus sed in. Ultrices porttitor vulputate ullamcorper curabitur platea quam lobortis facilisi natoque vehicula tellus, diam tristique cras felis efficitur conubia nam leo ipsum. Proin magna est ac ante sagittis dictumst nec ligula tortor suscipit, porttitor nibh arcu sem justo habitasse metus enim praesent torquent odio, nisl at rhoncus nullam ultrices ex dignissim erat tellus. Blandit finibus nunc sollicitudin erat donec primis fames sociosqu lacus eget natoque, enim nulla gravida sem torquent ut vitae commodo taciti ultrices neque, vestibulum cras ipsum inceptos tempor convallis rhoncus hendrerit platea in.</div>
 		</details>
-		<details>
-			<summary><div><span>03. TEMPLATES</span> <span>Manage your output here</span></div></summary>
+		<details x-bind="leftColumnSection">
+			<summary><div><span>3. TEMPLATES</span> <span>Manage your output here</span></div></summary>
 			<div>Urna nullam et faucibus penatibus aptent gravida augue consequat est, mollis fames mus himenaeos magna tristique fringilla. Primis porttitor malesuada dis magnis litora nisl aliquet cursus fusce efficitur, praesent ipsum vestibulum interdum euismod aptent proin erat condimentum, nascetur turpis class ligula etiam aenean natoque scelerisque hac. Parturient fames enim consequat eleifend eros cras tellus suspendisse, sagittis condimentum himenaeos urna gravida metus dis ornare, cubilia mus aenean odio a aliquam laoreet. Nisl dignissim nascetur tempor sit praesent malesuada parturient erat et, rhoncus suscipit aliquet fusce finibus primis montes est. Porttitor malesuada aliquet lacus luctus sodales pellentesque tortor porta aenean per potenti curabitur dui, ligula himenaeos posuere vel erat molestie maximus rhoncus hac habitasse torquent at.
 
 				Pretium accumsan etiam vulputate mi orci fermentum amet litora conubia congue bibendum euismod class imperdiet, enim tincidunt tristique ex erat diam aliquet gravida parturient massa lacinia sodales. Praesent vel neque vestibulum hendrerit feugiat nisl semper torquent sem at nisi, in convallis facilisis penatibus mus scelerisque cursus sapien magnis commodo. Torquent ornare magna ac nec ut mus mauris habitant volutpat, tempor leo blandit curae varius nostra iaculis non id, curabitur primis massa dignissim risus praesent lacinia molestie. Velit in faucibus vitae accumsan enim dis finibus tincidunt ex metus penatibus egestas dapibus molestie eleifend auctor ac ut taciti imperdiet, odio eu phasellus maximus consequat fames curabitur facilisis lorem augue cubilia pretium class sapien nulla sociosqu himenaeos mus. Euismod arcu accumsan pharetra netus semper ex consequat odio suscipit ante morbi, mus et purus curae faucibus vel ornare pellentesque urna. Eget natoque litora lacinia rutrum nulla id sit nunc ultricies turpis semper mauris interdum imperdiet, iaculis nostra morbi ultrices nec quisque facilisis lectus ridiculus ante gravida aenean quis.
@@ -188,8 +202,7 @@
 	<!-- RIGHT COLUMN -->
 	<section id="right">
 		<details>
-			<summary><div><span>04. OUTPUT</span> <span>Get your output here</span></div></summary>
-			<div x-data="$prism({language:'js'})"></div>
+			<summary><div><span>4. OUTPUT</span> <span>Get your output here</span></div></summary>
 			<div x-data="$prism({language:'liquid'})"></div>
 			<div id="output-wrapper">
 				<textarea
@@ -238,7 +251,22 @@ Suspendisse netus malesuada posuere aliquet turpis ultricies fermentum erat, iac
 			forceOutputOpen(e.matches);
 		});
 
+		const App = function(ev) {
+			console.log(ev);
+
+			return {};
+		}
+
 		document.addEventListener('alpine:init', event => {
+			Alpine.bind('leftColumnSection', _ => ({
+				'@click'() {
+					if (!this.$el.open) {
+						[...$$('section#left details[open]')]
+							.filter(el => el !== this.$el)
+							.map(el => el.removeAttribute('open'))
+					}
+				}
+			}));
 		});
 	</script>
 </body>
