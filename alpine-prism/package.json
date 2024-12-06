@@ -1,0 +1,23 @@
+{
+  "name": "alpine-prism",
+  "version": "1.0.0",
+  "description": "Prism Code Editor for Alpine",
+  "main": "alpine-prism.js",
+  "type": "module",
+  "scripts": {
+    "start": "esbuild --bundle alpine-prism.js --outfile=dist/alpine-prism.js --target=es2020,safari11 --sourcemap --watch",
+    "build": "esbuild --bundle alpine-prism.js --outfile=dist/alpine-prism.js --target=es2020,safari11 --minify"
+  },
+  "keywords": [
+    "alpine",
+    "prism",
+    "code",
+    "editor"
+  ],
+  "author": "Adam Kiss",
+  "license": "ISC",
+  "dependencies": {
+    "esbuild": "^0.24.0",
+    "prism-code-editor": "^3.4.0"
+  }
+}

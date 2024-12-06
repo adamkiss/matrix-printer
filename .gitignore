@@ -1,1 +1,3 @@
 .DS_Store
+alpine-prism/node_modules
+alpine-prism/dist/alpine-prism.js.map
