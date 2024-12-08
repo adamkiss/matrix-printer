@@ -5,8 +5,8 @@
   "main": "alpine-prism.js",
   "type": "module",
   "scripts": {
-    "start": "esbuild --bundle alpine-prism.js --outfile=dist/alpine-prism.js --target=es2020,safari11 --sourcemap --watch",
-    "build": "esbuild --bundle alpine-prism.js --outfile=dist/alpine-prism.js --target=es2020,safari11 --minify"
+    "start": "sh prism-patch.sh && esbuild --bundle alpine-prism.js --outfile=dist/alpine-prism.js --target=es2020,safari11 --sourcemap --watch",
+    "build": "sh prism-patch.sh && esbuild --bundle alpine-prism.js --outfile=dist/alpine-prism.js --target=es2020,safari11 --minify"
   },
   "keywords": [
     "alpine",

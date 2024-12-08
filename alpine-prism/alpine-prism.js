@@ -5,14 +5,8 @@ import "prism-code-editor/prism/languages/javascript"
 import "prism-code-editor/prism/languages/liquid"
 
 document.addEventListener("alpine:init", initEvent => {
-    // Setup prism
-    // setupMarkupTemplating(Prism)
-    // setupLiquid(Prism)
-	// setupJavascript(languages)
 
-	// console.log(languages)
-
-    // Setup magic
+	// Setup magic
 	Alpine.magic('prism', (el, {Alpine}) => {
 		return function({language = 'plain', testString = 'tsv'} = {}) {
 			return {
@@ -22,7 +16,7 @@ document.addEventListener("alpine:init", initEvent => {
 				init() {
 					this.$nextTick(_ => {
 						this.editor = basicEditor(this.$el, {
-							language, theme: 'prism',
+							language, theme: 'night-owl',
 							value: this.value,
 							onUpdate: code => this.value = code
 						})
@@ -33,5 +27,5 @@ document.addEventListener("alpine:init", initEvent => {
 				}
 			}
 		}
-    });
+	});
 });

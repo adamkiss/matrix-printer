@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,8 +23,16 @@
 		}
 
 		/* Remove default margin in favour of better control in authored CSS */
-		body, h1, h2, h3, h4, p,
-		figure, blockquote, dl, dd {
+		body,
+		h1,
+		h2,
+		h3,
+		h4,
+		p,
+		figure,
+		blockquote,
+		dl,
+		dd {
 			margin-block-end: 0;
 		}
 
@@ -40,14 +49,21 @@
 		}
 
 		/* Set shorter line heights on headings and interactive elements */
-		h1, h2, h3, h4,
-		button, input, label {
+		h1,
+		h2,
+		h3,
+		h4,
+		button,
+		input,
+		label {
 			line-height: 1.1;
 		}
 
 		/* Balance text wrapping on headings */
-		h1, h2,
-		h3, h4 {
+		h1,
+		h2,
+		h3,
+		h4 {
 			text-wrap: balance;
 		}
 
@@ -65,8 +81,10 @@
 		}
 
 		/* Inherit fonts for inputs and buttons */
-		input, button,
-		textarea, select {
+		input,
+		button,
+		textarea,
+		select {
 			font-family: inherit;
 			font-size: inherit;
 		}
@@ -83,67 +101,152 @@
 
 		/* DESIGN */
 		:root {
-			--background: 34 58% 92%; /** BRIDE **/
-			--foreground: 236 40% 15%; /** PURPLISH **/
-			--border: 236 40% 15%; /** PURPLISH **/
+			/** BLACK **/
+			--greyscale: 0, 0%, 0%;
+			/** BRIDE **/
+			--background: 34, 58%, 92%;
+			/** PURPLISH **/
+			--foreground: 236, 40%, 15%;
+			/** BLUE AF **/
+			--contrast: 236, 100%, 50%;
+			/** PURPLISH **/
+			--border: 236, 40%, 15%;
 
-			--step--2: clamp(0.7035rem, 0.5993rem + 0.5207vw, 1.12rem);
-			--step--1: clamp(0.9377rem, 0.8222rem + 0.5778vw, 1.4rem);
-			--step-0: clamp(1.25rem, 1.125rem + 0.625vw, 1.75rem);
-			--step-1: clamp(1.6663rem, 1.5359rem + 0.6516vw, 2.1875rem);
-			--step-2: clamp(2.2211rem, 2.0928rem + 0.6416vw, 2.7344rem);
-			--step-3: clamp(2.9607rem, 2.8464rem + 0.5715vw, 3.418rem);
+			--step--3: clamp(0.4864rem, 0.8661rem + -0.3797vw, 0.7901rem);
+			--step--2: clamp(0.6877rem, 0.9392rem + -0.2515vw, 0.8889rem);
+			--step--1: clamp(0.9724rem, 1.0069rem + -0.0345vw, 1rem);
+			--step-0: clamp(1.125rem, 1.0625rem + 0.3125vw, 1.375rem);
+			--step-1: clamp(1.2656rem, 1.096rem + 0.8483vw, 1.9443rem);
+			--step-2: clamp(1.4238rem, 1.0925rem + 1.6567vw, 2.7492rem);
+			--step-3: clamp(1.6018rem, 1.0304rem + 2.8569vw, 3.8873rem);
+			--step-4: clamp(1.802rem, 0.8784rem + 4.6183vw, 5.4967rem);
+
+			--token-selector: green;
 
 			@media screen and (prefers-color-scheme: dark) {
-				--background: 236 40% 15%; /** PURPLISH **/
-				--foreground: 34 58% 92%; /** BRIDE **/
-				--border: 34 58% 92%; /** BRIDE **/
+				/** WHITE **/
+				--greyscale: 0, 0%, 100%;
+				/** PURPLISH **/
+				--background: 236, 40%, 15%;
+				/** BRIDE **/
+				--foreground: 34, 58%, 92%;
+				/** YELLOW **/
+				--contrast: 52, 96%, 50%;
+				/** BRIDE **/
+				--border: 34, 58%, 92%;
 			}
 		}
 
-		html, body {
+		html,
+		body {
 			margin: 0;
 			background: hsl(var(--background));
 			color: hsl(var(--foreground));
 		}
+
 		body {
 			font-size: var(--step-0);
 		}
 
-		details {
+		textarea {
+			border: 0;
+			padding: var(--step--2);
 			background: hsl(var(--background));
-			padding: var(--step--1);
+			color: hsl(var(--foreground));
 		}
+
+		textarea:focus {
+			outline: none;
+			box-shadow: inset 0 0 0 3px hsl(var(--contrast));
+			color: hsl(var(--contrast));
+		}
+
 		details:not([open]) {
 			padding-bottom: 0;
 		}
+
 		details:not(:last-child) {
 			border-bottom: 2px solid hsl(var(--border));
 		}
-		summary {
-			font-size: var(--step-1);
-			margin: calc(-1*var(--step--1)) calc(-1*var(--step--1)) var(--step--2);
-			border-bottom: 1px solid hsl(var(--border));
-			cursor: pointer;
+
+		summary,
+		section>header {
+			padding-inline: var(--step--2);
+			padding-block: var(--step--2);
+
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+
 			outline: none;
+			background: hsla(var(--foreground), 0.1);
+			border-bottom: 1px solid hsl(var(--border));
+			font-size: var(--step-1);
+		}
+
+		summary {
+			cursor: pointer;
+		}
+
+		summary>span[label],
+		header span[label] {
+			background: hsla(var(--greyscale), .1);
+			line-height: 1.2;
+			border-radius: 999px;
 			padding-inline: var(--step--2);
 		}
-		details:not([open]) > summary {
+
+		details span[label]::before {
+			content: '→';
+			display: inline-block;
+			transition: rotate .2s;
+			font-size: 0.8em;
+			translate: 0 -0.1em;
+			margin-right: .2em;
+		}
+
+		details:not([open])>summary {
 			margin-bottom: 0;
 			border-bottom: 0;
 		}
-		summary > div {
-			width: calc(100% - 1.06em);
-			display: inline-flex;
-			justify-content: space-between;
+
+		details:not([open])>summary>span[label]::before {
+			rotate: 90deg;
 		}
+
+		details[open] span[label] {
+			font-weight: bold;
+		}
+
+		details span[info] {
+			font-size: var(--step-0);
+			color: hsl(var(--foreground), .7);
+		}
+
+		header button {
+			font-size: var(--step-0) !important;
+			background: hsla(var(--foreground));
+			color: hsla(var(--background));
+			border: none;
+			border-radius: 999px;
+			padding-inline: var(--step--2);
+
+			position: relative;
+		}
+
+		header button:active {
+			top: 2px;
+		}
+
 		#output {
 			width: 100%;
 		}
+
 		@media screen and (min-width: 1020px) {
 			section#left {
 				width: 50%;
 			}
+
 			section#right {
 				position: fixed;
 				top: 0;
@@ -152,23 +255,42 @@
 				right: 0;
 				border-left: 2px solid hsl(var(--border));
 			}
-			section#right > details {
+
+			section#right>details {
 				height: 100%;
 			}
-			#output-wrapper {
-				height: calc(100% - 2*var(--step-0));
-			}
+
 			#output {
-				height: 100%;
+				height: calc(100% - 2*var(--step-1));
+			}
+		}
+
+		#brand {
+			position: fixed;
+			bottom: 0;
+			right: 0;
+			margin: var(--step--2);
+			animation: potato 10s linear infinite;
+		}
+
+		@keyframes potato {
+			0% {
+				transform: rotate(0);
+			}
+
+			100% {
+				transform: rotate(360deg);
 			}
 		}
 
 		.smaller-text {
 			font-size: var(--step--1);
 		}
+
 		.smallest-text {
 			font-size: var(--step--2);
 		}
+
 		:disabled {
 			opacity: .4;
 		}
@@ -180,57 +302,47 @@
 	<script defer src="/vendor/alpinejs@3.14.6.min.js"></script>
 	<script src="/vendor/liquid@10.19.0.browser.min.js"></script>
 </head>
+
 <body x-data="App()" x-bind="root">
 	<!-- LEFT COLUMN -->
 	<section id="left">
 		<details x-bind="leftColumnSection" open>
-			<summary><div><span>0. MATRIX PRINTER</span> <span>About & info</span></div></summary>
+			<summary><span label>0) MATRIX PRINTER</span> <span info>About & info</span></summary>
 			<div>
 				Ahoy!
 			</div>
 		</details>
 		<details x-bind="leftColumnSection" open>
-			<summary><div><span>1. DATA</span> <span>Paste your data here</span></div></summary>
-			<div>
-				<div
-					x-data="$prism()"
-					x-model="input" x-modelable="value"
-					x-on:click="focusTextarea"
-				></div>
+			<summary><span label>1) DATA</span> <span info>Paste your data here</span></summary>
+			<div style="max-height: 400px; overflow-y: scroll;">
+				<div x-data="$prism()" x-model="input" x-modelable="value" x-on:click="focusTextarea"></div>
 			</div>
 			</div>
 		</details>
 		<details x-bind="leftColumnSection">
-			<summary><div><span>2. FUNCTIONS</span> <span>Edit your additional functions here</span></div></summary>
+			<summary><span label>2) FUNCTIONS</span> <span info>Edit your additional functions here</span></summary>
 			<div>
-				<div
-					x-data="$prism({language: 'javascript'})"
-					x-model="filtersRaw" x-modelable="value"
-					x-on:click="focusTextarea"
-				></div>
+				<div x-data="$prism({language: 'javascript'})" x-model="filtersRaw" x-modelable="value"
+					x-on:click="focusTextarea"></div>
 			</div>
 		</details>
 		<details x-bind="leftColumnSection">
-			<summary><div><span>3. TEMPLATES</span> <span>Manage your output here</span></div></summary>
+			<summary><span label>3) TEMPLATES</span> <span info>Manage your output here</span></summary>
 			<div>
-				<div
-					x-data="$prism({language: 'liquid'})"
-					x-model="template" x-modelable="value"
-					x-on:click="focusTextarea"
-				></div>
+				<div x-data="$prism({language: 'liquid'})" x-model="template" x-modelable="value" x-on:click="focusTextarea">
+				</div>
 			</div>
 		</details>
 	</section>
 	<!-- RIGHT COLUMN -->
 	<section id="right">
-		<details open>
-			<summary><div><span>4. OUTPUT</span> <button @click="$clipboard(output)" x-bind:disabled="output === '' || output === null">Copy to clipboard</button></div></summary>
-			<div id="output-wrapper">
-				<textarea id="output" x-text="output" readonly></textarea>
-			</div>
-		</details>
-		WHAT
+		<header><span label>4) OUTPUT</span> <button @click="$clipboard(output)"
+				x-bind:disabled="output === '' || output === null">Copy to clipboard</button></header>
+		<textarea id="output" x-text="output" readonly></textarea>
 	</section>
+	<a href="https://adamkiss.com" id="brand" target="_blank">
+		<img src="/logo-adamkiss-base.svg" alt="Logo: Adam Kiss" width="60" height="60">
+	</a>
 
 	<!-- THIS IS THE ACTUAL APP LIKE IT'S 1999 BABY -->
 	<script>
@@ -241,7 +353,7 @@
 		function $$(selector) {
 			return document.querySelectorAll(selector);
 		}
-		function maxstache (str, ctx = {}) {
+		function maxstache(str, ctx = {}) {
 			// Minimalist mustache template replacement (str, obj) -> null
 			// if the index is even, the "token" is NOT inside {{}} and should be left alone
 			// if it's odd, it's inside the brackets and should be replaced
@@ -251,22 +363,10 @@
 			return res.join('')
 		}
 
-		const isScreenWideEnough = window.matchMedia('(min-width: 1020px)');
-		const forceOutputOpen = (matches) => {
-			if (matches) {
-				$('section#right > details').open = true;
-			}
-		};
-
-		forceOutputOpen(isScreenWideEnough.matches);
-		isScreenWideEnough.addEventListener('change', e => {
-			forceOutputOpen(e.matches);
-		});
-
 		const Liquid = window.liquidjs.Liquid;
 		const engine = new Liquid();
 
-		const App = function() {
+		const App = function () {
 			return {
 				// Models
 				input: localStorage.getItem('input') || '',
@@ -358,7 +458,6 @@
 							}
 							engine.registerFilter(filter, this.filters[filter])
 						}
-						console.info(engine.filters)
 						this.errors.filters = null
 					} catch (error) {
 						this.errors.filters = `<b>Filters error</b> ${error.message}`
@@ -372,21 +471,21 @@
 					localStorage.setItem('template', this.template)
 
 					if (this.errors.parsing?.length || this.errors.filters) {
-							this.output = null
-							return
+						this.output = null
+						return
 					}
 
 					this.errors.render = null
 
 					try {
-						const {data, allKey, groupBy, template} = this
+						const { data, allKey, groupBy, template } = this
 
 						const rendered = await Promise.all(data.map(async row => {
-							const rendered = await engine.parseAndRender(template, Object.assign({}, row, {[allKey]: row}))
-							return {row, rendered}
+							const rendered = await engine.parseAndRender(template, Object.assign({}, row, { [allKey]: row }))
+							return { row, rendered }
 						}))
 
-						if (! groupBy) {
+						if (!groupBy) {
 							this.output = rendered.map(item => item.rendered).join('\n')
 						} else {
 							const grouped = rendered.reduce((r, item) => {
@@ -399,21 +498,21 @@
 								.map(key => `${key}:\n${grouped[key].join('\n')}`)
 								.join('\n\n')
 
-							}
-						} catch (error) {
-							this.output = null
-							this.errors.render = `<b>Render error</b> ${error.message}`
-							console.error(this.errors.render)
 						}
+					} catch (error) {
+						this.output = null
+						this.errors.render = `<b>Render error</b> ${error.message}`
+						console.error(this.errors.render)
+					}
 				},
 
 				parse() {
 					localStorage.setItem('input', this.input)
 
-					const {data, errors, meta} = window.Papa.parse(this.input, {
-							header: true,
-							skipEmptyLines: true,
-							dynamicTyping: true
+					const { data, errors, meta } = window.Papa.parse(this.input, {
+						header: true,
+						skipEmptyLines: true,
+						dynamicTyping: true
 					})
 
 					this.errors.parsing = errors.map(error => `<b>Parsing error</b> [${error.type}/${error.code}]:${error.row} ${error.message}`)
@@ -435,4 +534,5 @@
 		});
 	</script>
 </body>
+
 </html>
