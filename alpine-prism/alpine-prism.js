@@ -16,7 +16,10 @@ document.addEventListener("alpine:init", initEvent => {
 				init() {
 					this.$nextTick(_ => {
 						this.editor = basicEditor(this.$el, {
-							language, theme: 'night-owl',
+							language,
+							theme: 'night-owl',
+							insertSpaces: false,
+							tabSize: 4,
 							value: this.value,
 							onUpdate: code => this.value = code
 						})

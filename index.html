@@ -99,6 +99,10 @@
 			scroll-margin-block: 5ex;
 		}
 
+		p:first-child {
+			margin-top: 0;
+		}
+
 		/* DESIGN */
 		:root {
 			/** BLACK **/
@@ -111,6 +115,8 @@
 			--contrast: 236, 100%, 50%;
 			/** PURPLISH **/
 			--border: 236, 40%, 15%;
+			/** LIGHT RED **/
+			--error: 0, 100%, 50%;
 
 			--step--3: clamp(0.4864rem, 0.8661rem + -0.3797vw, 0.7901rem);
 			--step--2: clamp(0.6877rem, 0.9392rem + -0.2515vw, 0.8889rem);
@@ -134,6 +140,8 @@
 				--contrast: 52, 96%, 50%;
 				/** BRIDE **/
 				--border: 34, 58%, 92%;
+				/** DARK RED **/
+				--error: 0, 100%, 50%;
 			}
 		}
 
@@ -142,23 +150,33 @@
 			margin: 0;
 			background: hsl(var(--background));
 			color: hsl(var(--foreground));
+			font-family: arial, sans-serif;
 		}
 
 		body {
 			font-size: var(--step-0);
 		}
 
-		textarea {
+		textarea, input, select {
 			border: 0;
 			padding: var(--step--2);
 			background: hsl(var(--background));
 			color: hsl(var(--foreground));
 		}
 
-		textarea:focus {
+		input, select {
+			width: 100%;
+			border: 1px solid hsl(var(--border), .6);
+		}
+
+		textarea:focus, input:focus {
 			outline: none;
 			box-shadow: inset 0 0 0 3px hsl(var(--contrast));
 			color: hsl(var(--contrast));
+		}
+
+		select {
+			display: block;
 		}
 
 		details:not([open]) {
@@ -175,7 +193,7 @@
 			padding-block: var(--step--2);
 
 			display: flex;
-			justify-content: space-between;
+			justify-content: flex-start;
 			align-items: center;
 
 			outline: none;
@@ -187,22 +205,30 @@
 		summary {
 			cursor: pointer;
 		}
+		summary::marker, summary::-webkit-details-marker {
+			display: none;
+		}
 
-		summary>span[label],
-		header span[label] {
+		h1, h2 {
+			display: inline;
+			font-size: inherit;
+			font-weight: normal;
 			background: hsla(var(--greyscale), .1);
 			line-height: 1.2;
 			border-radius: 999px;
 			padding-inline: var(--step--2);
+			margin: 0;
+			font-family: times, serif;
 		}
 
-		details span[label]::before {
+		details h1::before, details h2::before {
 			content: '→';
 			display: inline-block;
 			transition: rotate .2s;
 			font-size: 0.8em;
 			translate: 0 -0.1em;
 			margin-right: .2em;
+			rotate: 90deg;
 		}
 
 		details:not([open])>summary {
@@ -210,11 +236,11 @@
 			border-bottom: 0;
 		}
 
-		details:not([open])>summary>span[label]::before {
-			rotate: 90deg;
+		details:not([open]) h1::before, details:not([open]) h2::before {
+			rotate: 0deg;
 		}
 
-		details[open] span[label] {
+		details[open] h1, details[open] h2 {
 			font-weight: bold;
 		}
 
@@ -238,8 +264,37 @@
 			top: 2px;
 		}
 
+		.template-header {
+			padding-inline: var(--step--2);
+			padding-top: var(--step--1);
+			font-size: var(--step--0);
+			font-weight: bold;
+		}
+		.template-info {
+			padding-inline: var(--step--2);
+			font-size: var(--step--1);
+			color: hsl(var(--foreground), .7);
+		}
+
 		#output {
 			width: 100%;
+		}
+
+		#errors {
+			position: absolute;
+			z-index: 100;
+			top: calc(2*var(--step-2));
+			left: var(--step-0);
+			right: var(--step-0);
+			padding: var(--step-1);
+			background: hsl(var(--error));
+		}
+		#errors p:first-of-type {
+			margin-block-start: 0;
+		}
+
+		#about {
+			padding: var(--step-0);
 		}
 
 		@media screen and (min-width: 1020px) {
@@ -283,12 +338,19 @@
 			}
 		}
 
-		.smaller-text {
+		.text-smaller {
 			font-size: var(--step--1);
 		}
 
-		.smallest-text {
+		.text-smallest {
 			font-size: var(--step--2);
+		}
+		.clamp-height {
+			max-height: 400px;
+			overflow-y: scroll;
+		}
+		.flex-grow {
+			flex-grow: 1;
 		}
 
 		:disabled {
@@ -307,38 +369,60 @@
 	<!-- LEFT COLUMN -->
 	<section id="left">
 		<details x-bind="leftColumnSection" open>
-			<summary><span label>0) MATRIX PRINTER</span> <span info>About & info</span></summary>
-			<div>
-				Ahoy!
+			<summary><h1>0) MATRIX PRINTER</h1><span class="flex-grow"> </span><span info>About & info</span></summary>
+			<div id="about">
+				<p>Matrix Printer is a tool that takes CSV, TSV or pasted data from Excel (delimiter is auto-detected), optionally group them, and format them into continuous text using Liquid filters and templates.</p>
+				<p>It's a simple way to generate reports, emails, or any other text-based output from structured data. Also great way to get non-manually markup tabular data.</p>
+				<p class="text-smaller">&copy; 2024 <a href="https://adamkiss.com" target="_blank"> Adam Kiss</a>, <a href="https://github.com/adamkiss/matrix-printer" target="_blank">Source code available on GitHub</a></p>
 			</div>
 		</details>
 		<details x-bind="leftColumnSection" open>
-			<summary><span label>1) DATA</span> <span info>Paste your data here</span></summary>
-			<div style="max-height: 400px; overflow-y: scroll;">
+			<summary><h2>1) DATA</h2><span class="flex-grow"> </span><span info>Paste your data here</span></summary>
+			<div class="clamp-height">
 				<div x-data="$prism()" x-model="input" x-modelable="value" x-on:click="focusTextarea"></div>
 			</div>
 			</div>
 		</details>
 		<details x-bind="leftColumnSection">
-			<summary><span label>2) FUNCTIONS</span> <span info>Edit your additional functions here</span></summary>
-			<div>
+			<summary><h2>2) FUNCTIONS</h2><span class="flex-grow"> </span><span info>Edit Liquid filters here</span></summary>
+			<div class="clamp-height">
 				<div x-data="$prism({language: 'javascript'})" x-model="filtersRaw" x-modelable="value"
 					x-on:click="focusTextarea"></div>
 			</div>
 		</details>
 		<details x-bind="leftColumnSection">
-			<summary><span label>3) TEMPLATES</span> <span info>Manage your output here</span></summary>
+			<summary><h2>3) TEMPLATES</h2><span class="flex-grow"> </span><span info>Manage your output here</span></summary>
 			<div>
-				<div x-data="$prism({language: 'liquid'})" x-model="template" x-modelable="value" x-on:click="focusTextarea">
+				<div style="display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid hsla(var(--border), .1)">
+					<div style="padding: var(--step--2) var(--step--1) var(--step--1)">
+						<label class="text-smaller" for="allKeyInput">The `all` key (for wild Liquid filters)</label>
+						<input type="text" x-model="allKey">
+					</div>
+					<div style="padding: var(--step--2) var(--step--1) var(--step--1); border-left: 1px solid hsla(var(--border), .1)">
+						<label class="text-smaller" for="groupByInput">Group by</label>
+						<select name="my_option" x-model="groupBy" class="">
+							<template x-for="option in ['', ...fields]" :key="option">
+									<option :value="option" x-text="option" x-bind:selected="option === groupBy"></option>
+							</template>
+					</select>
+					</div>
 				</div>
+				<div class="template-header">Template for rows:</div>
+				<div x-data="$prism({language: 'liquid'})" x-model="template" x-modelable="value" x-on:click="focusTextarea"></div>
+				<div class="template-info">Available keys: <span x-text="available"></span></div>
 			</div>
 		</details>
 	</section>
 	<!-- RIGHT COLUMN -->
 	<section id="right">
-		<header><span label>4) OUTPUT</span> <button @click="$clipboard(output)"
+		<header><h2>4) OUTPUT</h2><span class="flex-grow"> </span><button @click="$clipboard(output)"
 				x-bind:disabled="output === '' || output === null">Copy to clipboard</button></header>
 		<textarea id="output" x-text="output" readonly></textarea>
+		<div id="errors" x-show="hasError">
+			<template x-for="(err, idx) in allErrors" :key="idx">
+				<p x-html="err"></p>
+			</template>
+		</div>
 	</section>
 	<a href="https://adamkiss.com" id="brand" target="_blank">
 		<img src="/logo-adamkiss-base.svg" alt="Logo: Adam Kiss" width="60" height="60">
@@ -369,11 +453,12 @@
 		const App = function () {
 			return {
 				// Models
-				input: localStorage.getItem('input') || '',
-				filtersRaw: localStorage.getItem('filters') || '{}',
+				input: localStorage.getItem('input') || 'first_col\tsecond_col\nRow 1 Field 1\tRow 1 Field 2\nRow 2 Field 1\tRow 2 Field 2\nRow 3 Field 1\tRow 3 Field 2',
+				filtersRaw: localStorage.getItem('filters') || `{\n\tlower: (value) => value.toLowerCase()\n}`,
 				allKey: localStorage.getItem('allKey') || 'all',
 				groupBy: localStorage.getItem('groupBy') || '',
-				template: localStorage.getItem('template') || '',
+				templateHeader: localStorage.getItem('templateHeader') || '# {{ demo_title }}',
+				template: localStorage.getItem('template') || '- demo: {{ first_col }} ({{ second_col | lower}})',
 				output: '',
 
 				// Computed
@@ -399,6 +484,7 @@
 					this.$watch('allKey', this.render)
 					this.$watch('groupBy', this.render)
 					this.$watch('template', this.render)
+					this.$watch('templateHeader', this.render)
 
 					await this.onResize()
 					await this.parse()
@@ -413,15 +499,9 @@
 					'x-on:keydown.ctrl.2.window.prevent'() { $('section#left details:nth-of-type(3) summary').click() },
 					'x-on:keydown.ctrl.3.window.prevent'() { $('section#left details:nth-of-type(4) summary').click() },
 				},
-				fillDemo: {
-					'x-on:click'() {
-						this.input = `one\ttwo\tthree`;
-					}
-				},
 
 				// Event Listeners
-				async onResize() {
-				},
+				async onResize() {},
 
 				// Helpers
 				get hasError() {
@@ -430,7 +510,7 @@
 
 				get allErrors() {
 					return [
-						...this.errors.parsing,
+						this.errors.parsing,
 						this.errors.filters,
 						this.errors.render
 					].filter(Boolean)
@@ -442,8 +522,18 @@
 
 				get available() {
 					return this.data?.length
-						? [this.allKey, ...Object.keys(this.data[0])].join(', ')
+						? [this.allKey, ...this.fields].join(', ')
 						: ''
+				},
+
+				get fields() {
+					return this.data?.length
+						? Object.keys(this.data[0])
+						: ''
+				},
+
+				get grouppingBy() {
+					return typeof(this.groupBy) === 'string' && this.groupBy.length > 0
 				},
 
 				// Methods
@@ -485,7 +575,9 @@
 							return { row, rendered }
 						}))
 
-						if (!groupBy) {
+						console.info(rendered)
+
+						if (this.grouppingBy === false) {
 							this.output = rendered.map(item => item.rendered).join('\n')
 						} else {
 							const grouped = rendered.reduce((r, item) => {
@@ -495,12 +587,11 @@
 							}, {})
 
 							this.output = Object.keys(grouped)
-								.map(key => `${key}:\n${grouped[key].join('\n')}`)
+								.map(key => `# ${key}:\n${grouped[key].join('\n')}`)
 								.join('\n\n')
 
 						}
 					} catch (error) {
-						this.output = null
 						this.errors.render = `<b>Render error</b> ${error.message}`
 						console.error(this.errors.render)
 					}
@@ -512,10 +603,17 @@
 					const { data, errors, meta } = window.Papa.parse(this.input, {
 						header: true,
 						skipEmptyLines: true,
-						dynamicTyping: true
+						dynamicTyping: true,
+
 					})
 
-					this.errors.parsing = errors.map(error => `<b>Parsing error</b> [${error.type}/${error.code}]:${error.row} ${error.message}`)
+					if (errors.length) {
+						this.errors.parsing = errors.map(error => `<b>Parsing error</b> [${error.type}/${error.code}]:${error.row} ${error.message}`).join('\n')
+						console.error(this.errors.parsing)
+					} else {
+						this.errors.parsing = null
+					}
+
 					this.data = data
 				}
 			}

@@ -1,10 +1,9 @@
 .prism-code-editor {
 	/* color: hsl(var(--foreground)); */
-	caret-color: hsl(var(--theme));
+	caret-color: hsl(236, 100%, 50%);
 	font-family: "Iosevka AK2", "SF Mono", monospace;
 
 	--editor__bg: transparent;
-
 	--widget__border: transparent;
 	--widget__bg: #edeae8;
 	--widget__color: #444;
@@ -21,7 +20,6 @@
 	--editor__bg-highlight: #fffc;
 	--editor__bg-selection-match: #b6d5fc80;
 	--editor__line-number: #9d897b;
-	--editor__bg-scrollbar: 24, 7%, 35%;
 	--editor__bg-fold: #00f;
 	--bg-guide-indent: #4b413a33;
 	color-scheme: auto;
@@ -149,6 +147,7 @@
 @media screen and (prefers-color-scheme: dark) {
 	.prism-code-editor {
 		--editor__bg-highlight: #fff2;
+		caret-color: hsl(52, 96%, 50%);
 	}
 
 	.match-highlight {
