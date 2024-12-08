@@ -197,8 +197,7 @@
 			align-items: center;
 
 			outline: none;
-			background: hsla(var(--foreground), 0.1);
-			border-bottom: 1px solid hsl(var(--border));
+			background: linear-gradient(to bottom, hsla(var(--foreground), 0.05), hsla(var(--foreground), 0.1));
 			font-size: var(--step-1);
 		}
 
@@ -217,17 +216,18 @@
 			line-height: 1.2;
 			border-radius: 999px;
 			padding-inline: var(--step--2);
+
 			margin: 0;
 			font-family: times, serif;
 		}
 
 		details h1::before, details h2::before {
-			content: '→';
+			content: '▹';
 			display: inline-block;
 			transition: rotate .2s;
-			font-size: 0.8em;
-			translate: 0 -0.1em;
-			margin-right: .2em;
+			font-size: 0.6em;
+			translate: 0 -.2em;
+			margin-right: .4em;
 			rotate: 90deg;
 		}
 
@@ -369,7 +369,7 @@
 	<!-- LEFT COLUMN -->
 	<section id="left">
 		<details x-bind="leftColumnSection" open>
-			<summary><h1>0) MATRIX PRINTER</h1><span class="flex-grow"> </span><span info>About & info</span></summary>
+			<summary><h1>⓪ MATRIX PRINTER</h1><span class="flex-grow"> </span><span info>About & info</span></summary>
 			<div id="about">
 				<p>Matrix Printer is a tool that takes CSV, TSV or pasted data from Excel (delimiter is auto-detected), optionally group them, and format them into continuous text using Liquid filters and templates.</p>
 				<p>It's a simple way to generate reports, emails, or any other text-based output from structured data. Also great way to get non-manually markup tabular data.</p>
@@ -377,21 +377,21 @@
 			</div>
 		</details>
 		<details x-bind="leftColumnSection" open>
-			<summary><h2>1) DATA</h2><span class="flex-grow"> </span><span info>Paste your data here</span></summary>
+			<summary><h2>① DATA</h2><span class="flex-grow"> </span><span info>Paste your data here</span></summary>
 			<div class="clamp-height">
 				<div x-data="$prism()" x-model="input" x-modelable="value" x-on:click="focusTextarea"></div>
 			</div>
 			</div>
 		</details>
 		<details x-bind="leftColumnSection">
-			<summary><h2>2) FUNCTIONS</h2><span class="flex-grow"> </span><span info>Edit Liquid filters here</span></summary>
+			<summary><h2>② FUNCTIONS</h2><span class="flex-grow"> </span><span info>Edit Liquid filters here</span></summary>
 			<div class="clamp-height">
 				<div x-data="$prism({language: 'javascript'})" x-model="filtersRaw" x-modelable="value"
 					x-on:click="focusTextarea"></div>
 			</div>
 		</details>
 		<details x-bind="leftColumnSection">
-			<summary><h2>3) TEMPLATES</h2><span class="flex-grow"> </span><span info>Manage your output here</span></summary>
+			<summary><h2>③ TEMPLATES</h2><span class="flex-grow"> </span><span info>Manage your output here</span></summary>
 			<div>
 				<div style="display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid hsla(var(--border), .1)">
 					<div style="padding: var(--step--2) var(--step--1) var(--step--1)">
@@ -415,7 +415,7 @@
 	</section>
 	<!-- RIGHT COLUMN -->
 	<section id="right">
-		<header><h2>4) OUTPUT</h2><span class="flex-grow"> </span><button @click="$clipboard(output)"
+		<header><h2>⊜ OUTPUT</h2><span class="flex-grow"> </span><button @click="$clipboard(output)"
 				x-bind:disabled="output === '' || output === null">Copy to clipboard</button></header>
 		<textarea id="output" x-text="output" readonly></textarea>
 		<div id="errors" x-show="hasError">
