@@ -374,7 +374,7 @@
 <body x-data="App()" x-bind="root">
 	<!-- LEFT COLUMN -->
 	<section id="left">
-		<details x-bind="leftColumnSection" open>
+		<details x-bind="leftColumnSection">
 			<summary><h1>⓪ Matrix Printer</h1><span class="flex-grow"> </span><span info>About & info</span></summary>
 			<div id="about">
 				<p>Matrix Printer is a tool that takes CSV, TSV or pasted data from Excel (delimiter is auto-detected), optionally groups it and formats it into continuous text using <a href="https://liquidjs.com/tutorials/intro-to-liquid.html" target="_blank">Liquid</a> filters and templates.</p>
@@ -449,14 +449,24 @@
 		const engine = new Liquid();
 
 		const App = function () {
+			const visitedBefore = localStorage.getItem('visited');
+			if (!visitedBefore) {
+				localStorage.setItem('visited', true);
+			}
+
 			return {
 				// Models
-				input: localStorage.getItem('input') || 'first_col\tsecond_col\nRow 1 Field 1\tRow 1 Field 2\nRow 2 Field 1\tRow 2 Field 2\nRow 3 Field 1\tRow 3 Field 2',
+				input: localStorage.getItem('input')
+					|| (
+						visitedBefore
+						? ''
+						: 'first_col\tsecond_col\nRow 1 Field 1\tRow 1 Field 2\nRow 2 Field 1\tRow 2 Field 2\nRow 3 Field 1\tRow 3 Field 2'
+					),
 				filtersRaw: localStorage.getItem('filters') || `{\n\tlower: (value) => value.toLowerCase()\n}`,
 				allKey: localStorage.getItem('allKey') || 'all',
 				groupBy: localStorage.getItem('groupBy') || '',
 				templateHeader: localStorage.getItem('templateHeader') || '# {{ demo_title }}',
-				template: localStorage.getItem('template') || '- demo: {{ first_col }} ({{ second_col | lower}})',
+				template: localStorage.getItem('template') || '- demo: {{ first_col }}, second+filter: {{ second_col | lower}}',
 				output: '',
 
 				// Computed
@@ -484,6 +494,10 @@
 					this.$watch('template', this.render)
 					this.$watch('templateHeader', this.render)
 
+					if (!visitedBefore) {
+						$('section#left details:nth-of-type(1) summary').click()
+					}
+
 					await this.onResize()
 					await this.parse()
 					await this.setFilters()
@@ -496,6 +510,17 @@
 					'x-on:keydown.ctrl.1.window.prevent'() { $('section#left details:nth-of-type(2) summary').click() },
 					'x-on:keydown.ctrl.2.window.prevent'() { $('section#left details:nth-of-type(3) summary').click() },
 					'x-on:keydown.ctrl.3.window.prevent'() { $('section#left details:nth-of-type(4) summary').click() },
+				},
+				leftColumnSection: {
+					/* @WHY: KEEP OPENED DETAILS OPENED
+					'@click'() {
+						if (!this.$el.open) {
+							[...$$('section#left details[open]')]
+								.filter(el => el !== this.$el)
+								.map(el => el.removeAttribute('open'))
+						}
+					}
+					*/
 				},
 
 				// Event Listeners
@@ -573,8 +598,6 @@
 							return { row, rendered }
 						}))
 
-						console.info(rendered)
-
 						if (this.grouppingBy === false) {
 							this.output = rendered.map(item => item.rendered).join('\n')
 						} else {
@@ -616,20 +639,6 @@
 				}
 			}
 		}
-
-		document.addEventListener('alpine:init', event => {
-			Alpine.bind('leftColumnSection', _ => ({
-				/* @WHY: KEEP OPENED DETAILS OPENED
-				'@click'() {
-					if (!this.$el.open) {
-						[...$$('section#left details[open]')]
-							.filter(el => el !== this.$el)
-							.map(el => el.removeAttribute('open'))
-					}
-				}
-				*/
-			}));
-		});
 	</script>
 </body>
 
