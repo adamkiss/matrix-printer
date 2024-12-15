@@ -462,6 +462,20 @@
 			return document.querySelectorAll(selector);
 		}
 
+		function configFromUrl() {
+			const hash = location.hash.slice(1)
+			if (hash.length === 0) {
+				return null;
+			}
+
+			try {
+				const { f, a, g, t } = JSON.parse(decodeURIComponent(hash))
+				return { filtersRaw: f, allKey: a, groupBy: g, template: t }
+			} catch (error) {
+				return null;
+			}
+		}
+
 		const Liquid = window.liquidjs.Liquid;
 		const engine = new Liquid();
 
@@ -471,6 +485,8 @@
 				localStorage.setItem('visited', true);
 			}
 
+			let config = this.configFromUrl();
+
 			return {
 				// Models
 				input: localStorage.getItem('input')
@@ -479,11 +495,11 @@
 						? ''
 						: 'first_col\tsecond_col\nRow 1 Field 1\tRow 1 Field 2\nRow 2 Field 1\tRow 2 Field 2\nRow 3 Field 1\tRow 3 Field 2'
 					),
-				filtersRaw: localStorage.getItem('filters') || `{\n\tlower: (value) => value.toLowerCase()\n}`,
-				allKey: localStorage.getItem('allKey') || 'all',
-				groupBy: localStorage.getItem('groupBy') || '',
+				filtersRaw: config?.filters || localStorage.getItem('filters') || `{\n\tlower: (value) => value.toLowerCase()\n}`,
+				allKey: config?.allKey || localStorage.getItem('allKey') || 'all',
+				groupBy: config?.groupBy || localStorage.getItem('groupBy') || '',
 				templateHeader: localStorage.getItem('templateHeader') || '# {{ demo_title }}',
-				template: localStorage.getItem('template') || '- demo: {{ first_col }}, second+filter: {{ second_col | lower}}',
+				template: config?.template || localStorage.getItem('template') || '- demo: {{ first_col }}, second+filter: {{ second_col | lower}}',
 				output: '',
 
 				// Computed
@@ -576,10 +592,23 @@
 					return typeof(this.groupBy) === 'string' && this.groupBy.length > 0
 				},
 
+				pushUrl() {
+					const hash = JSON.stringify({
+						f: this.filtersRaw,
+						a: this.allKey,
+						g: this.groupBy,
+						t: this.template
+					})
+
+					// push to url
+					history.replaceState({}, '', `#${encodeURIComponent(hash)}`)
+				},
+
 				// Methods
 				setFilters() {
 					try {
 						localStorage.setItem('filters', this.filtersRaw)
+						this.pushUrl()
 						this.filters = eval(`_ => (${this.filtersRaw})`)()
 
 						for (const filter in this.filters) {
@@ -599,6 +628,7 @@
 					localStorage.setItem('allKey', this.allKey)
 					localStorage.setItem('groupBy', this.groupBy)
 					localStorage.setItem('template', this.template)
+					this.pushUrl()
 
 					if (this.errors.parsing?.length || this.errors.filters) {
 						this.output = null
