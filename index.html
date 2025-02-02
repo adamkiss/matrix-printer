@@ -234,6 +234,8 @@
 			font-family: times, serif;
 			/* font-family: 'courier new', courier, monospace; */
 			text-transform: uppercase;
+			/* don't break the line */
+			white-space: nowrap;
 		}
 
 		details h1::before, details h2::before {
@@ -263,6 +265,7 @@
 		details span[info] {
 			font-size: var(--step--1);
 			color: hsl(var(--foreground), .7);
+			display: none;
 		}
 
 		header button {
@@ -315,6 +318,12 @@
 
 		#about {
 			padding: var(--step-0);
+		}
+
+		@media screen and (min-width: 400px) {
+			details span[info] {
+				display: inline;
+			}
 		}
 
 		@media screen and (min-width: 1020px) {
