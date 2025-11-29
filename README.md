@@ -4,4 +4,4 @@ Matrix Printer is a tool that takes CSV, TSV or pasted data from Excel (delimite
 
 It's a simple way to generate reports, emails, or any other text-based output from structured data. Also a great way to programmatically markup tabular data.
 
-&copy; 2024 [Adam Kiss](https://adamkiss.com)
+&copy; 2025 [Adam Kiss](https://adamkiss.com)

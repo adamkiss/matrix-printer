@@ -1,34 +1,24 @@
-/* eslint-disable no-undef */
+/**
+ * mitem - Minimalistic templating engine for JavaScript
+ * @version custom
+ * @link https://github.com/ygorko/miTem/tree/master
+ *
+ * Copyright (c) 2015-2024 Yegor Kozlov (https://ygorko.ru)
+ * Licensed under the MIT license.
+ *
+ * Matrix Printer version: removed statements and partials, keeping expressions and filters only.
+ */
 
+/* eslint-disable no-undef */
 (function () {
   const miTem = {
     name: 'miTem',
-    version: '1.0.10',
+    version: 'custom',
   };
 
   const templateSettings = {
-    statement: /\{%([\s\S]+?)%\}/g,
     expression: /\{\{([\s\S]+?)\}\}/g,
     filter_param: /([\s\S]+?)(\(([^)]*)\))$/,
-  };
-
-  miTem.partials = {};
-
-  miTem.registerPartial = (name, partial) => {
-    miTem.partials[name] = (typeof partial === 'string') ? miTem.compile(partial) : partial;
-  };
-
-  const statements = {
-    partial: (...args) => `o+=m.partials['${args[1]}'].apply(null, [${((typeof args[2] !== 'undefined') ? (`c.${args[2]}`) : 'c')}]);`,
-    if: (...args) => `if(c.${args[1]}){`,
-    else: (...args) => `}else ${(args[1] === 'if' ? statements.if('', args[2]) : '{')}`,
-    endif: () => '}',
-    endfor: () => '}c=c.loop.parent;',
-    for: (...args) => {
-      const code = `if (typeof c.${args[3]}=== 'undefined') return '';const t={loop:{parent:c,length:c.${args[3]}.length}};c=t;var i=0;if(typeof c.loop.parent.${args[3]}.length === 'undefined'){c.loop.length=m.objSize(c.loop.parent.${args[3]})}for(${args[1]} in c.loop.parent.${args[3]}){if (!c.loop.parent.${args[3]}.hasOwnProperty(${args[1]}))continue;c.${args[1]}=c.loop.parent.${args[3]}[${args[1]}];c.loop.last=(i===c.loop.length-1);c.loop.first=(i===0);c.loop.key=${args[1]};c.loop.index0=i; c.loop.index=i+1;i++;`;
-
-      return code;
-    },
   };
 
   miTem.var = function (val) {
@@ -38,7 +28,7 @@
   miTem.var.prototype.applyFilter = function (filterName, filterParameters) {
     let ret;
     if (typeof miTem.filters[filterName] !== 'undefined') {
-      ret = miTem.filters[filterName].apply(this.val, filterParameters);
+      ret = miTem.filters[filterName](this.val, ...filterParameters);
     } else if (typeof this.val[filterName] === 'undefined') {
       throw new Error(`Filter ${filterName} is not defined`);
     } else {
@@ -66,17 +56,15 @@
 
   miTem.restoreDefaultSettings();
 
-  miTem.filters = {
-    default(value) {
-      // eslint-disable-next-line strict,lines-around-directive
-      'use strict';
-      return (typeof this === 'undefined') ? value : this;
-    },
-    abs() { return Math.abs(this); },
-    capitalize() { return this.charAt(0).toUpperCase() + this.slice(1); },
-    nl2br() { return this.replace(/\n/gi, '<br />'); },
-    title() { return this.split(' ').map(val => val.charAt(0).toUpperCase() + val.slice(1).toLowerCase()).join(' '); },
+  miTem.defaultFilters = {
+    default: (v, fallback) => v ?? fallback,
+	abs: v => Math.abs(v),
+	capitalize: s => s.charAt(0).toUpperCase() + s.slice(1),
+	nl2br: s => s.replace(/\n/gi, '<br />'),
+	title: s => s.split(' ').map(val => val.charAt(0).toUpperCase() + val.slice(1).toLowerCase()).join(' '),
   };
+
+  miTem.filters = Object.assign({}, miTem.defaultFilters);
 
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = miTem;
@@ -109,16 +97,6 @@
     let compiled = true;
     let lineNumber;
     let lineStr;
-    const statementReplaceFn = function (...args) {
-      const lexemes = args[1].trim().split(' ');
-      let retStr = "';";
-      if (typeof statements[lexemes[0]] === 'undefined') {
-        console.error(`Line: ${lineNumber}; Error in ${args[0]}; Unknown tag '${lexemes[0]}'`);
-        compiled = false;
-      } else retStr += statements[lexemes[0]].apply(null, lexemes);
-      retStr += "o+='";
-      return retStr;
-    };
     const expressionReplaceFn = function (...args) {
       const key = args[1];
       let calculatedValue = miTem.processFilters(key.replace(/\\'/gi, "'"));
@@ -134,8 +112,7 @@
       lineStr = line;
       returnFunctionStr += newLine;
       const currentLine = lineStr.replace(/'/gi, "\\'");
-      returnFunctionStr += currentLine.replace(templateSettings.statement, statementReplaceFn)
-        .replace(templateSettings.expression, expressionReplaceFn);
+      returnFunctionStr += currentLine.replace(templateSettings.expression, expressionReplaceFn);
       newLine = "'+\"\\n\"+'";
     });
 

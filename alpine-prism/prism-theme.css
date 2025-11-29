@@ -17,7 +17,7 @@
 	--widget__bg-error: #f2dede;
 	--widget__error-ring: #be1100;
 
-	--editor__bg-highlight: #fffc;
+	--editor__bg-highlight: #fff9;
 	--editor__bg-selection-match: #b6d5fc80;
 	--editor__line-number: #9d897b;
 	--editor__bg-fold: #00f;
@@ -146,7 +146,7 @@
 /** dark-mode */
 @media screen and (prefers-color-scheme: dark) {
 	.prism-code-editor {
-		--editor__bg-highlight: #fff2;
+		--editor__bg-highlight: #fff1;
 		caret-color: hsl(52, 96%, 50%);
 	}
 

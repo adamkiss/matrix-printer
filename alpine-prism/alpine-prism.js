@@ -5,7 +5,6 @@ import "prism-code-editor/prism/languages/javascript"
 import "prism-code-editor/prism/languages/liquid"
 
 document.addEventListener("alpine:init", initEvent => {
-
 	// Setup magic
 	Alpine.magic('prism', (el, {Alpine}) => {
 		return function({language = 'plain', testString = 'tsv'} = {}) {

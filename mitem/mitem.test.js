@@ -116,3 +116,11 @@ test("Filter title", function () {
   assert.strictEqual(template({who: "test"}), "hello 'Test'");
   assert.strictEqual(template({who: "test   test"}), "hello 'Test   Test'");
 });
+
+test("Custom filter", function () {
+	mitem.filters = Object.assign(mitem.filters, {
+		reverse: str => str.split('').reverse().join('')
+	});
+	let template = mitem.compile("hello '{{who|reverse}}'");
+	assert.strictEqual(template({who: "abcd"}), "hello 'dcba'");
+});
