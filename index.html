@@ -160,8 +160,6 @@
 				--border: 0, 0%, 0%;
 				/** DARK RED **/
 				--error: 0, 100%, 50%;
-
-				--editor__bg-highlight: red;
 			}
 		}
 
@@ -204,14 +202,14 @@
 		}
 
 		select {
-			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24px' height='24px' viewBox='0 0 24 24'%3E%3Cpath fill='currentColor' d='M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.11 0 2-.89 2-2V5a2 2 0 0 0-2-2m-7 12.71l-6-6l1.41-1.42L12 12.88l4.59-4.59L18 9.71z'/%3E%3C/svg%3E");
 			background-position: right 0.5rem center;
 			background-repeat: no-repeat;
-			background-size: 1.5em 1.5em;
+			background-size: 24px 24px;
 			padding-right: 2.5rem;
 		}
 		select:active, select:focus {
-			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23f00' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24px' height='24px' viewBox='0 0 24 24'%3E%3Cpath fill='currentColor' d='M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.11 0 2-.89 2-2V5a2 2 0 0 0-2-2m-7 12.71l-6-6l1.41-1.42L12 12.88l4.59-4.59L18 9.71z'/%3E%3C/svg%3E");
 		}
 
 
@@ -439,15 +437,17 @@
 	<script defer src="/alpine-prism/dist/alpine-prism.js"></script>
 	<script defer src="/vendor/alpine-clipboard@2.3.0.min.js"></script>
 	<script defer src="/vendor/alpine-focus@3.4.16.min.js"></script>
+	<script defer src="/vendor/alpine-persist@3.15.2.min.js"></script>
 	<script defer src="/vendor/alpinejs@3.14.6.min.js"></script>
-	<!-- <script src="/vendor/liquid@10.19.0.browser.min.js"></script> -->
+	<!-- <script defer src="/vendor/liquid@10.19.0.browser.min.js"></script> -->
 	<script src="/mitem/mitem.js"></script>
 </head>
 
-<body x-data="App()" x-bind="root">
+<body x-data="app" x-bind="root">
+
 	<!-- LEFT COLUMN -->
 	<section id="left">
-		<details x-bind="leftColumnSection">
+		<details x-bind="left_column_section">
 			<summary>
 				<h1>⓪ Matrix Printer</h1><span class="flex-grow"> </span><span info>About & info</span>
 			</summary>
@@ -456,13 +456,14 @@
 					optionally groups it and formats it into continuous text using <a
 						href="https://liquidjs.com/tutorials/intro-to-liquid.html" target="_blank">Liquid</a> filters and templates.
 				</p>
-				<p>It's a simple way to generate reports, emails, or any other text-based output from structured data. Also a
+				<p>It's a simple way to generate reports, emails, or any other text-based output from structured this.data. Also a
 					great way to programmatically markup tabular data.</p>
 				<p class="text-smaller">&copy; 2024 <a href="https://adamkiss.com" target="_blank"> Adam Kiss</a>, <a
 						href="https://github.com/adamkiss/matrix-printer" target="_blank">Source code available on GitHub</a></p>
 			</div>
 		</details>
-		<details x-bind="leftColumnSection" open>
+
+		<details x-bind="left_column_section" open>
 			<summary>
 				<h2>① Data</h2><span class="flex-grow"> </span><span info>Paste your data here</span>
 			</summary>
@@ -471,42 +472,48 @@
 			</div>
 			</div>
 		</details>
-		<details x-bind="leftColumnSection" open>
+
+		<details x-bind="left_column_section" open>
 			<summary>
 				<h2>② Template</h2><span class="flex-grow"> </span><span info>Manage your output here</span>
 			</summary>
 			<div>
 				<div style="display: grid; grid-template-columns: 1fr 1fr" class="text-smaller">
 					<div style="padding: var(--step--2) var(--step--1) var(--step--1)">
-						<label class="text-smaller bold" for="allKeyInput">The `all` key (for wild Liquid filters)</label>
-						<input type="text" x-model="allKey" name="allKeyInput" id="allKeyInput">
+						<label class="text-smaller bold" for="key-all-input">The `all` key (for wild Liquid filters)</label>
+						<input type="text" x-model="at.key_all" name="key-all-input" id="key-all-input">
 					</div>
 					<div style="padding: var(--step--2) var(--step--1) var(--step--1)">
 						<label class="text-smaller bold" for="groupByInput">Group by column</label>
-						<select name="my_option" x-model="groupBy" class="">
+						<select name="my_option" x-model="at.group_by" class="">
 							<template x-for="option in ['', ...fields]" :key="option">
-								<option :value="option" x-text="option" x-bind:selected="option === groupBy"></option>
+								<option :value="option" x-text="option" x-bind:selected="option === at.group_by"></option>
 							</template>
 						</select>
 					</div>
 				</div>
+				<div class="template-header">Template for headers:</div>
+				<div x-data="$prism({language: 'liquid'})" x-model="at.template_header" x-modelable="value" x-on:click="focusTextarea"
+					class="text-smaller prism-textarea"></div>
+				<div class="template-info">Available keys: `__group` for the value of the column you're grouping by</div>
 				<div class="template-header">Template for rows:</div>
-				<div x-data="$prism({language: 'liquid'})" x-model="template" x-modelable="value" x-on:click="focusTextarea"
+				<div x-data="$prism({language: 'liquid'})" x-model="at.template_item" x-modelable="value" x-on:click="focusTextarea"
 					class="text-smaller prism-textarea"></div>
 				<div class="template-info">Available keys: <span x-text="available"></span></div>
 			</div>
 		</details>
-		<details x-bind="leftColumnSection">
+
+		<details x-bind="left_column_section">
 			<summary>
 				<h2>③ Filters</h2><span class="flex-grow"> </span><span info>Add custom filters</span>
 			</summary>
 			<div class="clamp-height text-smaller prism-textarea">
-				<div x-data="$prism({language: 'javascript'})" x-model="filtersRaw" x-modelable="value"
+				<div x-data="$prism({language: 'javascript'})" x-model="raw_filters" x-modelable="value"
 					x-on:click="focusTextarea"></div>
 			</div>
 		</details>
-
 	</section>
+
 	<!-- RIGHT COLUMN -->
 	<section id="right">
 		<header>
@@ -514,8 +521,8 @@
 				x-bind:disabled="output === '' || output === null">Copy to clipboard</button>
 		</header>
 		<textarea id="output" x-text="output" readonly></textarea>
-		<div id="errors" x-show="hasError">
-			<template x-for="(err, idx) in allErrors" :key="idx">
+		<div id="errors" x-show="all_errors.length">
+			<template x-for="(err, idx) in all_errors" :key="idx">
 				<p x-html="err"></p>
 			</template>
 		</div>
@@ -534,25 +541,23 @@
 			return document.querySelectorAll(selector);
 		}
 
-		const App = function () {
-			const visitedBefore = localStorage.getItem('visited');
-			if (!visitedBefore) {
-				localStorage.setItem('visited', true);
-			}
+		document.addEventListener('alpine:init', () => {
+			Alpine.data('app', _ => ({
+				// Control
+				visited: Alpine.$persist(false),
 
-			return {
 				// Models
-				input: localStorage.getItem('input')
-					|| (
-						visitedBefore
-							? ''
-							: 'first_col\tsecond_col\nRow 1 Field 1\tRow 1 Field 2\nRow 2 Field 1\tRow 2 Field 2\nRow 3 Field 1\tRow 3 Field 2'
-					),
-				filtersRaw: localStorage.getItem('filters') || `{\n\tlower: (value) => value.toLowerCase()\n}`,
-				allKey: localStorage.getItem('allKey') || 'all',
-				groupBy: localStorage.getItem('groupBy') || '',
-				templateHeader: localStorage.getItem('templateHeader') || '# {{ demo_title }}',
-				template: localStorage.getItem('template') || '- demo: {{ first_col }}, second+filter: {{ second_col | lower}}',
+				input: Alpine.$persist('band\tname\tsurname\nBeatles\tRingo\tStarr\nBlink 182\tTravis\tBarker'),
+				raw_filters: Alpine.$persist(`{\n\tlower: v => v.toLowerCase(),\n\tupper: v => v.toUpperCase(),\n}`),
+				templates: Alpine.$persist({
+					default: {
+						key_all: '__all',
+						group_by: 'band',
+						template_header: '# {{ __group }}',
+						template_item: '- {{ name | lower }} {{ surname | upper }}',
+					}
+				}),
+				active_template: Alpine.$persist('default'),
 				output: '',
 
 				// Computed
@@ -568,36 +573,38 @@
 				async init() {
 					this.parse = this.parse.bind(this)
 					this.render = this.render.bind(this)
-					this.setFilters = this.setFilters.bind(this)
+					this.process_filters = this.process_filters.bind(this)
 
 					this.$watch('input', this.parse)
-
-					this.$watch('filtersRaw', this.setFilters)
+					this.$watch('raw_filters', _ => {
+						this.process_filters();
+						this.render();
+					})
 
 					this.$watch('data', this.render)
-					this.$watch('allKey', this.render)
-					this.$watch('groupBy', this.render)
-					this.$watch('template', this.render)
-					this.$watch('templateHeader', this.render)
+					this.$watch('active_template', this.render)
+					this.$watch('at.key_all', this.render)
+					this.$watch('at.group_by', this.render)
+					this.$watch('at.template_header', this.render)
+					this.$watch('at.template_item', this.render)
 
-					if (!visitedBefore) {
+					if (!this.visited) {
 						$('section#left details:nth-of-type(1) summary').click()
+						this.visited = true
 					}
 
-					await this.onResize()
 					await this.parse()
-					await this.setFilters()
+					await this.process_filters()
 					await this.render()
 				},
 
 				// Binds
 				root: {
-					'x-on:resize.window.debounce.200'() { this.onResize() },
 					'x-on:keydown.ctrl.1.window.prevent'() { $('section#left details:nth-of-type(2) summary').click() },
 					'x-on:keydown.ctrl.2.window.prevent'() { $('section#left details:nth-of-type(3) summary').click() },
 					'x-on:keydown.ctrl.3.window.prevent'() { $('section#left details:nth-of-type(4) summary').click() },
 				},
-				leftColumnSection: {
+				left_column_section: {
 					/* @WHY: KEEP OPENED DETAILS OPENED
 					'@click'() {
 						if (!this.$el.open) {
@@ -609,15 +616,16 @@
 					*/
 				},
 
-				// Event Listeners
-				async onResize() { },
-
 				// Helpers
-				get hasError() {
-					return this.errors.parsing?.length || this.errors.filters || this.errors.render
+				get at() {
+					return this.templates[this.active_template];
 				},
 
-				get allErrors() {
+				get has_error() {
+					return this.first_error !== false
+				},
+
+				get all_errors() {
 					return [
 						this.errors.parsing,
 						this.errors.filters,
@@ -625,13 +633,13 @@
 					].filter(Boolean)
 				},
 
-				get firstError() {
-					return this.allErrors[0]
+				get first_error() {
+					return this.all_errors[0] ?? false
 				},
 
 				get available() {
 					return this.data?.length
-						? [this.allKey, ...this.fields].join(', ')
+						? [this.key_all, ...this.fields].join(', ')
 						: ''
 				},
 
@@ -641,16 +649,15 @@
 						: ''
 				},
 
-				get grouppingBy() {
-					return typeof (this.groupBy) === 'string' && this.groupBy.length > 0
+				get groupping_by() {
+					return typeof (this.at?.group_by) === 'string' && this.at?.group_by.length > 0
 				},
 
 				// Methods
-				setFilters() {
+				process_filters() {
 					try {
-						localStorage.setItem('filters', this.filtersRaw)
-						this.filters = eval(`_ => (${this.filtersRaw})`)();
-
+						this.filters = eval(`_ => (${this.raw_filters})`)();
+						console.log(this.filters);
 						window.miTem.filters = Object.assign(
 							{},
 							window.miTem.defaultFilters,
@@ -658,16 +665,12 @@
 						);
 						this.errors.filters = null
 					} catch (error) {
+						console.error(error)
 						this.errors.filters = `<b>Filters error</b> ${error.message}`
-						console.error(this.errors.filters)
 					}
 				},
 
 				async render() {
-					localStorage.setItem('allKey', this.allKey)
-					localStorage.setItem('groupBy', this.groupBy)
-					localStorage.setItem('template', this.template)
-
 					if (this.errors.parsing?.length || this.errors.filters) {
 						this.output = null
 						return
@@ -676,38 +679,40 @@
 					this.errors.render = null
 
 					try {
-						const { data, allKey, groupBy, template } = this
+						const { key_all, group_by, template_item, template_header } = this.at;
 
-						const tpl = window.miTem.compile(template)
+						const tplfn_header = window.miTem.compile(template_header);
+						const tplfn_item = window.miTem.compile(template_item)
 
-						const rendered = await Promise.all(data.map(async row => {
-							const rendered = tpl(Object.assign({}, row, { [allKey]: row }));
+						const rendered = await Promise.all(this.data.map(async row => {
+							const rendered = tplfn_item(Object.assign({}, row, { [key_all]: row }));
 							return { row, rendered }
 						}))
 
-						if (this.grouppingBy === false) {
+
+						if (this.groupping_by === false) {
 							this.output = rendered.map(item => item.rendered).join('\n')
 						} else {
 							const grouped = rendered.reduce((r, item) => {
-								const key = item.row[groupBy]
+								const key = item.row[group_by]
 								r[key] = [...r[key] || [], item.rendered]
 								return r
-							}, {})
+							}, {});
 
 							this.output = Object.keys(grouped)
-								.map(key => `# ${key}:\n${grouped[key].join('\n')}`)
-								.join('\n\n')
-
+								.map(__group => [
+									tplfn_header({ __group }),
+									grouped[__group]
+								].join('\n'))
+								.join('\n\n');
 						}
 					} catch (error) {
+						console.error(error)
 						this.errors.render = `<b>Render error</b> ${error.message}`
-						console.error(this.errors.render)
 					}
 				},
 
 				parse() {
-					localStorage.setItem('input', this.input)
-
 					const { data, errors, meta } = window.Papa.parse(this.input, {
 						header: true,
 						skipEmptyLines: true,
@@ -724,8 +729,8 @@
 
 					this.data = data
 				}
-			}
-		}
+			}));
+		});
 	</script>
 </body>
 
