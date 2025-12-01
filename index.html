@@ -478,6 +478,28 @@
 				<h2>② Template</h2><span class="flex-grow"> </span><span info>Manage your output here</span>
 			</summary>
 			<div>
+				<div style="padding: var(--step--2) var(--step--1) var(--step--1); display: flex; align-items: center;">
+					<div style=" flex-grow: 1;">
+						<label class="text-smaller bold" for="groupByInput">Group by column</label>
+						<select name="my_option" x-model="at.group_by" class="">
+							<template x-for="option in ['', ...fields]" :key="option">
+								<option :value="option" x-text="option" x-bind:selected="option === at.group_by"></option>
+							</template>
+						</select>
+					</div>
+					<div>
+						<label for=""> </label>
+						<button>Copy</button>
+					</div>
+					<div>
+						<label for=""> </label>
+						<button>Share</button>
+					</div>
+					<div>
+						<label for=""> </label>
+						<button>Delete</button>
+					</div>
+				</div>
 				<div style="display: grid; grid-template-columns: 1fr 1fr" class="text-smaller">
 					<div style="padding: var(--step--2) var(--step--1) var(--step--1)">
 						<label class="text-smaller bold" for="key-all-input">The `all` key (for wild Liquid filters)</label>
