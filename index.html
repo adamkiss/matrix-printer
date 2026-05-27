@@ -131,7 +131,8 @@
 			/** BLUE AF **/
 			--contrast: 236, 100%, 50%;
 			/** PURPLISH **/
-			--border: 236, 40%, 15%;
+			--border-section: 236, 40%, 15%;
+			--border-field: 236, 40%, 15%;
 			/** LIGHT RED **/
 			--error: 0, 100%, 80%;
 
@@ -156,11 +157,15 @@
 				/** YELLOW **/
 				--contrast: 52, 96%, 50%;
 				/** BRIDE **/
-				/* --border: 34, 58%, 92%; */
-				--border: 0, 0%, 0%;
+				/* --border-section: 34, 58%, 92%; */
+				--border-section: 0, 0%, 0%;
 				/** DARK RED **/
 				--error: 0, 100%, 50%;
 			}
+		}
+
+		html {
+			color-scheme: light dark;
 		}
 
 		html,
@@ -175,33 +180,37 @@
 			font-size: var(--step-0);
 		}
 
-		textarea,
+
+		input, select, button {
+			width: 100%;
+			font-size: 1.4rem;
+		}
+		/* textarea,
 		input,
 		select {
 			border: 0;
 			padding: var(--step--2);
 			background: hsl(var(--background));
 			color: hsl(var(--foreground));
-		}
+		} */
 
-		input,
+		/* input,
 		select,
 		.prism-textarea {
 			width: 100%;
-			/* border: 1px solid hsl(var(--border), .6); */
 			background-color: #0003;
 			box-shadow:
-				inset 2px 2px 0 0 black,
+				inset 1px 1px 0 0 black,
 				inset 0 0 6px #0001,
-				inset 0 -1px 1px 0 #fff3
+				inset -1px -1px 0 0 #fffc
 			;
 			appearance: none;
 			-webkit-appearance: none;
 			-moz-appearance: none;
 			border-radius: 0 !important;
-		}
+		} */
 
-		select {
+		/* select {
 			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24px' height='24px' viewBox='0 0 24 24'%3E%3Cpath fill='currentColor' d='M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.11 0 2-.89 2-2V5a2 2 0 0 0-2-2m-7 12.71l-6-6l1.41-1.42L12 12.88l4.59-4.59L18 9.71z'/%3E%3C/svg%3E");
 			background-position: right 0.5rem center;
 			background-repeat: no-repeat;
@@ -210,26 +219,31 @@
 		}
 		select:active, select:focus {
 			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24px' height='24px' viewBox='0 0 24 24'%3E%3Cpath fill='currentColor' d='M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.11 0 2-.89 2-2V5a2 2 0 0 0-2-2m-7 12.71l-6-6l1.41-1.42L12 12.88l4.59-4.59L18 9.71z'/%3E%3C/svg%3E");
-		}
+		} */
 
-
-		textarea:focus,
+		/* textarea:focus,
 		input:focus, select:focus {
 			outline: none;
-			box-shadow: inset 0 0 0 3px hsl(var(--contrast));
+			box-shadow: inset 0 0 0 2px hsl(var(--contrast)), inset 0 0 0 4px hsl(var(--contrast), .2);
 			color: hsl(var(--contrast));
+		} */
+
+		.field:focus-within {
+			background: hsl(var(--contrast), .1);
 		}
 
-		select {
+		:first-
+
+		/* select {
 			display: block;
-		}
+		} */
 
 		details:not([open]) {
 			padding-bottom: 0;
 		}
 
 		details:not(:last-child) {
-			border-bottom: 2px solid hsl(var(--border));
+			border-bottom: 2px solid hsl(var(--border-section));
 		}
 
 		summary,
@@ -324,7 +338,7 @@
 		}
 
 		.template-header {
-			border-top: 1px solid hsla(var(--border), .2);
+			border-top: 1px solid hsla(var(--border-section), .2);
 			padding-inline: var(--step--2);
 			padding-top: var(--step--1);
 			font-size: var(--step--1);
@@ -368,16 +382,37 @@
 
 		@media screen and (min-width: 1020px) {
 			section#left {
-				width: 50%;
+				width: 66%;
 			}
 
 			section#right {
+				background: hsl(var(--background));
+				z-index: 20;
 				position: fixed;
 				top: 0;
 				bottom: 0;
-				width: 50%;
+				width: 34%;
 				right: 0;
-				border-left: 2px solid hsl(var(--border));
+				border-left: 2px solid hsl(var(--border-section));
+			}
+
+			.is-maximised section#right {
+				width: 94%;
+			}
+
+			div.closeMaximised {
+				display: none;
+			}
+
+			.is-maximised div.closeMaximised {
+				display: block;
+				position: fixed;
+				background: hsla(var(--background), .4);
+				top: 0;
+				left: 0;
+				bottom: 0;
+				width: 6%;
+				z-index: 19;
 			}
 
 			section#right>details {
@@ -443,7 +478,7 @@
 	<script src="/mitem/mitem.js"></script>
 </head>
 
-<body x-data="app" x-bind="root">
+<body x-data="app" x-bind="root" x-bind:class="{ 'is-maximised': maximised }">
 
 	<!-- LEFT COLUMN -->
 	<section id="left">
@@ -467,7 +502,7 @@
 			<summary>
 				<h2>① Data</h2><span class="flex-grow"> </span><span info>Paste your data here</span>
 			</summary>
-			<div class="clamp-height text-smaller">
+			<div class="clamp-height text-smaller field ">
 				<div x-data="$prism()" x-model="input" x-modelable="value" x-on:click="focusTextarea"></div>
 			</div>
 			</div>
@@ -478,48 +513,48 @@
 				<h2>② Template</h2><span class="flex-grow"> </span><span info>Manage your output here</span>
 			</summary>
 			<div>
-				<div style="padding: var(--step--2) var(--step--1) var(--step--1); display: flex; align-items: center;">
-					<div style=" flex-grow: 1;">
-						<label class="text-smaller bold" for="groupByInput">Group by column</label>
-						<select name="my_option" x-model="at.group_by" class="">
-							<template x-for="option in ['', ...fields]" :key="option">
-								<option :value="option" x-text="option" x-bind:selected="option === at.group_by"></option>
+				<div style="padding: var(--step--2) var(--step--1) var(--step--1); display: flex; align-items: center; gap: var(--step--2)">
+					<div style="flex-grow: 1;"  class="text-smaller">
+						<label class="text-smaller bold" for="preset_select">Preset</label>
+						<select name="preset_select" x-model="preset_active" class="">
+							<template x-for="preset in Object.keys(presets)" :key="preset">
+								<option :value="preset" x-text="preset"></option>
 							</template>
 						</select>
 					</div>
-					<div>
+					<div style="display: flex; flex-direction: column;">
 						<label for=""> </label>
-						<button>Copy</button>
+						<button @click="preset_new">New</button>
 					</div>
-					<div>
+					<div style="display: flex; flex-direction: column;">
 						<label for=""> </label>
-						<button>Share</button>
+						<button @click="preset_share">Share</button>
 					</div>
-					<div>
+					<div style="display: flex; flex-direction: column;">
 						<label for=""> </label>
-						<button>Delete</button>
+						<button @click="preset_delete">Delete</button>
 					</div>
 				</div>
 				<div style="display: grid; grid-template-columns: 1fr 1fr" class="text-smaller">
 					<div style="padding: var(--step--2) var(--step--1) var(--step--1)">
 						<label class="text-smaller bold" for="key-all-input">The `all` key (for wild Liquid filters)</label>
-						<input type="text" x-model="at.key_all" name="key-all-input" id="key-all-input">
+						<input type="text" x-model="pa.key_all" name="key-all-input" id="key-all-input">
 					</div>
 					<div style="padding: var(--step--2) var(--step--1) var(--step--1)">
 						<label class="text-smaller bold" for="groupByInput">Group by column</label>
-						<select name="my_option" x-model="at.group_by" class="">
+						<select name="my_option" x-model="pa.group_by" class="">
 							<template x-for="option in ['', ...fields]" :key="option">
-								<option :value="option" x-text="option" x-bind:selected="option === at.group_by"></option>
+								<option :value="option" x-text="option" x-bind:selected="option === pa.group_by"></option>
 							</template>
 						</select>
 					</div>
 				</div>
 				<div class="template-header">Template for headers:</div>
-				<div x-data="$prism({language: 'liquid'})" x-model="at.template_header" x-modelable="value" x-on:click="focusTextarea"
+				<div x-data="$prism({language: 'liquid'})" x-model="pa.template_header" x-modelable="value" x-on:click="focusTextarea"
 					class="text-smaller prism-textarea"></div>
-				<div class="template-info">Available keys: `__group` for the value of the column you're grouping by</div>
+				<div class="template-info">Available keys: `group` for the value of the column you're grouping by</div>
 				<div class="template-header">Template for rows:</div>
-				<div x-data="$prism({language: 'liquid'})" x-model="at.template_item" x-modelable="value" x-on:click="focusTextarea"
+				<div x-data="$prism({language: 'liquid'})" x-model="pa.template_item" x-modelable="value" x-on:click="focusTextarea"
 					class="text-smaller prism-textarea"></div>
 				<div class="template-info">Available keys: <span x-text="available"></span></div>
 			</div>
@@ -537,10 +572,13 @@
 	</section>
 
 	<!-- RIGHT COLUMN -->
+	<div class="closeMaximised" @click="maximised = false"></div>
 	<section id="right">
 		<header>
-			<h2>⊜ OUTPUT</h2><span class="flex-grow"> </span><button @click="$clipboard(output)"
-				x-bind:disabled="output === '' || output === null">Copy to clipboard</button>
+			<h2>⊜ OUTPUT</h2>
+			<span class="flex-grow"> </span>
+			<button @click="maximised = !maximised" x-text="maximised ? 'Close' : 'Maximise'"></button>
+			<button @click="$clipboard(output)" x-bind:disabled="output === '' || output === null">Copy to clipboard</button>
 		</header>
 		<textarea id="output" x-text="output" readonly></textarea>
 		<div id="errors" x-show="all_errors.length">
@@ -567,19 +605,20 @@
 			Alpine.data('app', _ => ({
 				// Control
 				visited: Alpine.$persist(false),
+				maximised: false,
 
 				// Models
 				input: Alpine.$persist('band\tname\tsurname\nBeatles\tRingo\tStarr\nBlink 182\tTravis\tBarker'),
 				raw_filters: Alpine.$persist(`{\n\tlower: v => v.toLowerCase(),\n\tupper: v => v.toUpperCase(),\n}`),
-				templates: Alpine.$persist({
+				presets: Alpine.$persist({
 					default: {
 						key_all: '__all',
 						group_by: 'band',
-						template_header: '# {{ __group }}',
+						template_header: '# {{ group }}',
 						template_item: '- {{ name | lower }} {{ surname | upper }}',
 					}
 				}),
-				active_template: Alpine.$persist('default'),
+				preset_active: Alpine.$persist('default'),
 				output: '',
 
 				// Computed
@@ -604,11 +643,11 @@
 					})
 
 					this.$watch('data', this.render)
-					this.$watch('active_template', this.render)
-					this.$watch('at.key_all', this.render)
-					this.$watch('at.group_by', this.render)
-					this.$watch('at.template_header', this.render)
-					this.$watch('at.template_item', this.render)
+					this.$watch('preset_active', this.render)
+					this.$watch('pa.key_all', this.render)
+					this.$watch('pa.group_by', this.render)
+					this.$watch('pa.template_header', this.render)
+					this.$watch('pa.template_item', this.render)
 
 					if (!this.visited) {
 						$('section#left details:nth-of-type(1) summary').click()
@@ -618,6 +657,13 @@
 					await this.parse()
 					await this.process_filters()
 					await this.render()
+
+					if (window.location.search.includes('preset=')) {
+						// start import after loading page to avoid blocking the UI
+						setTimeout(() => {
+							this.preset_import()
+						}, 100)
+					}
 				},
 
 				// Binds
@@ -639,8 +685,8 @@
 				},
 
 				// Helpers
-				get at() {
-					return this.templates[this.active_template];
+				get pa() {
+					return this.presets[this.preset_active];
 				},
 
 				get has_error() {
@@ -672,7 +718,80 @@
 				},
 
 				get groupping_by() {
-					return typeof (this.at?.group_by) === 'string' && this.at?.group_by.length > 0
+					return typeof (this.pa?.group_by) === 'string' && this.pa?.group_by.length > 0
+				},
+
+				async preset_new() {
+					const name = prompt('Preset name')
+					if (!name) return
+
+					this.presets = {
+						...this.presets,
+						[name]: {
+							key_all: this.pa.key_all,
+							group_by: this.pa.group_by,
+							template_header: this.pa.template_header,
+							template_item: this.pa.template_item,
+						}
+					}
+
+					this.preset_active = name
+				},
+
+				preset_share() {
+					const url = new URL(window.location.href)
+					const preset = {
+						name: this.preset_active,
+						key_all: this.pa.key_all,
+						group_by: this.pa.group_by,
+						template_header: this.pa.template_header,
+						template_item: this.pa.template_item,
+					}
+					url.searchParams.set('preset', btoa(JSON.stringify(preset)))
+
+					prompt('Share this URL', url.href)
+				},
+
+				preset_import() {
+					try {
+						const url = new URL(window.location.href)
+						const preset = JSON.parse(atob(url.searchParams.get('preset')))
+
+						if (!preset.name) throw new Error('Invalid preset: missing name')
+						if (!preset.template_item) throw new Error('Invalid preset: missing template_item')
+
+						const name = prompt('Importing preset, name?', preset.name)
+						if (!name) return
+
+						this.presets = {
+							...this.presets,
+							[name]: {
+								key_all: preset.key_all || '',
+								group_by: preset.group_by || '',
+								template_header: preset.template_header || '',
+								template_item: preset.template_item,
+							}
+						}
+
+						this.preset_active = name
+					} catch (error) {
+						console.error(error)
+						alert('Failed to import preset: ' + error.message)
+					} finally {
+						// Remove the preset query parameter from the URL after importing
+						const url = new URL(window.location.href);
+						url.searchParams.delete('preset');
+						window.history.replaceState({}, document.title, url.toString());
+					}
+				},
+
+				preset_delete() {
+					if (!confirm('Are you sure you want to delete this preset?')) return
+					if (Object.keys(this.presets).length === 1) return alert('You must have at least one preset')
+
+					const { [this.preset_active]: _, ...rest } = this.presets
+					this.presets = rest
+					this.preset_active = Object.keys(this.presets).at(-1) ?? null
 				},
 
 				// Methods
@@ -701,7 +820,7 @@
 					this.errors.render = null
 
 					try {
-						const { key_all, group_by, template_item, template_header } = this.at;
+						const { key_all, group_by, template_item, template_header } = this.pa;
 
 						const tplfn_header = window.miTem.compile(template_header);
 						const tplfn_item = window.miTem.compile(template_item)
@@ -722,9 +841,9 @@
 							}, {});
 
 							this.output = Object.keys(grouped)
-								.map(__group => [
-									tplfn_header({ __group }),
-									grouped[__group]
+								.map(group => [
+									tplfn_header({ group }),
+									grouped[group]
 								].join('\n'))
 								.join('\n\n');
 						}
