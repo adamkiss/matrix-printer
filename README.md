@@ -1,7 +1,38 @@
-# [Matrix Printer](https://matrix-printer.adamkiss.com)
+# .
 
-Matrix Printer is a tool that takes CSV, TSV or pasted data from Excel (delimiter is auto-detected), optionally groups it and formats it into continuous text using [Liquid](https://liquidjs.com/tutorials/intro-to-liquid.html) filters and templates.
+This template should help get you started developing with Vue 3 in Vite.
 
-It's a simple way to generate reports, emails, or any other text-based output from structured data. Also a great way to programmatically markup tabular data.
+## Recommended IDE Setup
 
-&copy; 2025 [Adam Kiss](https://adamkiss.com)
+[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+
+## Recommended Browser Setup
+
+- Chromium-based browsers (Chrome, Edge, Brave, etc.):
+  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
+  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
+- Firefox:
+  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
+  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+
+## Customize configuration
+
+See [Vite Configuration Reference](https://vite.dev/config/).
+
+## Project Setup
+
+```sh
+npm install
+```
+
+### Compile and Hot-Reload for Development
+
+```sh
+npm run dev
+```
+
+### Compile and Minify for Production
+
+```sh
+npm run build
+```
