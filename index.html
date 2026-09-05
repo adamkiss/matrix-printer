@@ -185,32 +185,17 @@
 			width: 100%;
 			font-size: 1.4rem;
 		}
-		/* textarea,
+		textarea,
 		input,
 		select {
 			border: 0;
 			padding: var(--step--2);
 			background: hsl(var(--background));
 			color: hsl(var(--foreground));
-		} */
-
-		/* input,
-		select,
-		.prism-textarea {
-			width: 100%;
-			background-color: #0003;
-			box-shadow:
-				inset 1px 1px 0 0 black,
-				inset 0 0 6px #0001,
-				inset -1px -1px 0 0 #fffc
-			;
 			appearance: none;
-			-webkit-appearance: none;
-			-moz-appearance: none;
-			border-radius: 0 !important;
-		} */
+		}
 
-		/* select {
+		select {
 			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24px' height='24px' viewBox='0 0 24 24'%3E%3Cpath fill='currentColor' d='M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.11 0 2-.89 2-2V5a2 2 0 0 0-2-2m-7 12.71l-6-6l1.41-1.42L12 12.88l4.59-4.59L18 9.71z'/%3E%3C/svg%3E");
 			background-position: right 0.5rem center;
 			background-repeat: no-repeat;
@@ -219,20 +204,21 @@
 		}
 		select:active, select:focus {
 			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24px' height='24px' viewBox='0 0 24 24'%3E%3Cpath fill='currentColor' d='M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.11 0 2-.89 2-2V5a2 2 0 0 0-2-2m-7 12.71l-6-6l1.41-1.42L12 12.88l4.59-4.59L18 9.71z'/%3E%3C/svg%3E");
-		} */
+		}
 
-		/* textarea:focus,
+		textarea:focus,
 		input:focus, select:focus {
 			outline: none;
-			box-shadow: inset 0 0 0 2px hsl(var(--contrast)), inset 0 0 0 4px hsl(var(--contrast), .2);
-			color: hsl(var(--contrast));
-		} */
+		}
+
+		.field {
+			background: hsl(var(--background));
+			padding: var(--step--2);
+		}
 
 		.field:focus-within {
 			background: hsl(var(--contrast), .1);
 		}
-
-		:first-
 
 		/* select {
 			display: block;
@@ -442,6 +428,19 @@
 			}
 		}
 
+		.preset-controls {
+			display: flex;
+			gap: var(--step--2);
+			margin-top: var(--step--2);
+		}
+		.preset-controls select, .preset-controls button {
+			width: auto;
+			flex-shrink: 0;
+		}
+		.preset-controls select {
+			flex-grow: 1;
+		}
+
 		.text-smaller {
 			font-size: var(--step--1);
 		}
@@ -462,6 +461,10 @@
 
 		.flex-grow {
 			flex-grow: 1;
+		}
+
+		.col-span-2 {
+			grid-column: span 2;
 		}
 
 		:disabled {
@@ -513,34 +516,25 @@
 				<h2>② Template</h2><span class="flex-grow"> </span><span info>Manage your output here</span>
 			</summary>
 			<div>
-				<div style="padding: var(--step--2) var(--step--1) var(--step--1); display: flex; align-items: center; gap: var(--step--2)">
-					<div style="flex-grow: 1;"  class="text-smaller">
-						<label class="text-smaller bold" for="preset_select">Preset</label>
-						<select name="preset_select" x-model="preset_active" class="">
-							<template x-for="preset in Object.keys(presets)" :key="preset">
-								<option :value="preset" x-text="preset"></option>
-							</template>
-						</select>
+				<div style="display:grid; gap: 1px; grid-template-columns: 1fr 1fr; background: hsl(var(--border-field));" class="text-smaller">
+					<div class="field col-span-2">
+						<label class="bold" for="preset_select">Preset</label>
+						<div class="preset-controls">
+							<select name="preset_select" x-model="preset_active" class="">
+								<template x-for="preset in Object.keys(presets)" :key="preset">
+									<option :value="preset" x-text="preset"></option>
+								</template>
+							</select>
+							<button @click="preset_new">New</button>
+							<button @click="preset_share">Share</button>
+							<button @click="preset_delete">Delete</button>
+						</div>
 					</div>
-					<div style="display: flex; flex-direction: column;">
-						<label for=""> </label>
-						<button @click="preset_new">New</button>
-					</div>
-					<div style="display: flex; flex-direction: column;">
-						<label for=""> </label>
-						<button @click="preset_share">Share</button>
-					</div>
-					<div style="display: flex; flex-direction: column;">
-						<label for=""> </label>
-						<button @click="preset_delete">Delete</button>
-					</div>
-				</div>
-				<div style="display: grid; grid-template-columns: 1fr 1fr" class="text-smaller">
-					<div style="padding: var(--step--2) var(--step--1) var(--step--1)">
+					<div class="field">
 						<label class="text-smaller bold" for="key-all-input">The `all` key (for wild Liquid filters)</label>
 						<input type="text" x-model="pa.key_all" name="key-all-input" id="key-all-input">
 					</div>
-					<div style="padding: var(--step--2) var(--step--1) var(--step--1)">
+					<div class="field">
 						<label class="text-smaller bold" for="groupByInput">Group by column</label>
 						<select name="my_option" x-model="pa.group_by" class="">
 							<template x-for="option in ['', ...fields]" :key="option">
@@ -548,15 +542,19 @@
 							</template>
 						</select>
 					</div>
+					<div class="field">
+						<label class="bold">Template for headers:</label>
+						<div x-data="$prism({language: 'liquid'})" x-model="pa.template_header" x-modelable="value" x-on:click="focusTextarea"
+							class="prism-textarea"></div>
+						<div class="template-info">Available keys: `group` for the value of the column you're grouping by</div>
+					</div>
+					<div class="field">
+						<label class="bold">Template for rows:</label>
+						<div x-data="$prism({language: 'liquid'})" x-model="pa.template_item" x-modelable="value" x-on:click="focusTextarea"
+							class="prism-textarea"></div>
+						<div class="template-info">Available keys: <span x-text="available"></span></div>
+					</div>
 				</div>
-				<div class="template-header">Template for headers:</div>
-				<div x-data="$prism({language: 'liquid'})" x-model="pa.template_header" x-modelable="value" x-on:click="focusTextarea"
-					class="text-smaller prism-textarea"></div>
-				<div class="template-info">Available keys: `group` for the value of the column you're grouping by</div>
-				<div class="template-header">Template for rows:</div>
-				<div x-data="$prism({language: 'liquid'})" x-model="pa.template_item" x-modelable="value" x-on:click="focusTextarea"
-					class="text-smaller prism-textarea"></div>
-				<div class="template-info">Available keys: <span x-text="available"></span></div>
 			</div>
 		</details>
 
