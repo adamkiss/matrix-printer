@@ -1,0 +1,40 @@
+#!/usr/bin/env zsh
+# shellcheck shell=bash
+
+dev () { #: dev/watch process
+	trap './task prod; exit 0' SIGINT
+	npm run dev
+}
+
+prod () { #: generate dist files
+	npm run build
+}
+
+
+#
+# BOILERPLATE
+#
+r='./task'
+NAME='matrix-printer'
+
+h () { #: show help & commands
+	echo "$NAME script runner"
+	echo "Commands:"
+	sed -nr 's/^(.*) \(\).* #: (.*)$/  \1\t\2/p' $r | expand -20
+	# this sed looks crazy, but it just parses this file
+	# and finds lines with `() #: ` and prints them in a nice format
+}
+
+if [[ $# -gt 0 ]]; then
+	command="$1"
+	shift 1
+	if type "$command" 2>/dev/null | grep -q 'function'; then
+		$command "$@"
+	else
+		h
+		echo "No command '$command'."
+	fi;
+else
+	# task to run by default if no arguments are passed
+	dev
+fi
