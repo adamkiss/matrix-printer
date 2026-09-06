@@ -13,6 +13,7 @@ import { DEFAULT_CONFIG, LOCAL_STORAGE_KEY } from "./lib/defaults.js";
 // State
 const miTem = setupMiTem();
 const runtime = reactive({
+	standalone: false,
 	filters: {},
 	parsed: null,
 	columns: [],
@@ -65,6 +66,16 @@ onMounted(() => {
 
 	onInputChanged();
 	onPresetChanged();
+
+	if (window.location.search.includes("preset=")) {
+		setTimeout(_ => {
+			import_preset();
+		}, 100);
+	}
+
+	if ('standalone' in window.navigator && window.navigator.standalone) {
+		runtime.standalone = true;
+	}
 });
 
 function onInputChanged() {
@@ -106,59 +117,120 @@ function parseFilters() {
 	}
 }
 
-
 // RENDER
 async function render() {
-		if (runtime.hasError) {
-			runtime.output = "";
-			return;
-		}
-
-		try {
-			const p = cfg.presets[cfg.preset];
-			const tplh = miTem.compile(p.tpl_header);
-			const tpli = miTem.compile(p.tpl_item);
-
-			const r = await Promise.all(
-				runtime.parsed.map(async (row) => {
-					const rendered = tpli(row);
-					return { row, rendered };
-				}),
-			);
-
-			if (p.group_by === "") {
-				runtime.output = r.map(({ rendered }) => rendered).join("\n");
-				runtime.error.render = null;
-				return;
-			}
-
-			const grouped = r.reduce((acc, { row, rendered }) => {
-				const groupKey = row[p.group_by] ?? p.key_all;
-				if (!acc[groupKey]) acc[groupKey] = [];
-				acc[groupKey].push(rendered);
-				return acc;
-			}, {});
-
-			const output = Object.entries(grouped)
-				.map(([group, items]) => {
-					const header = tplh({ group });
-					return [header, ...items].join("\n");
-				})
-				.join("\n\n");
-
-			runtime.output = output;
-			runtime.error.render = null;
-		} catch (e) {
-			runtime.error.render = `Error rendering output: ${e.message}`;
-			runtime.output = "";
-			return;
-		}
+	if (runtime.hasError) {
+		runtime.output = "";
+		return;
 	}
-</script>
 
-<script>
-export default {
+	try {
+		const p = cfg.presets[cfg.preset];
+		const tplh = miTem.compile(p.tpl_header);
+		const tpli = miTem.compile(p.tpl_item);
 
+		const r = await Promise.all(
+			runtime.parsed.map(async (row) => {
+				const rendered = tpli(row);
+				return { row, rendered };
+			}),
+		);
+
+		if (p.group_by === "") {
+			runtime.output = r.map(({ rendered }) => rendered).join("\n");
+			runtime.error.render = null;
+			return;
+		}
+
+		const grouped = r.reduce((acc, { row, rendered }) => {
+			const groupKey = row[p.group_by] ?? p.key_all;
+			if (!acc[groupKey]) acc[groupKey] = [];
+			acc[groupKey].push(rendered);
+			return acc;
+		}, {});
+
+		const output = Object.entries(grouped)
+			.map(([group, items]) => {
+				const header = tplh({ group });
+				return [header, ...items].join("\n");
+			})
+			.join("\n\n");
+
+		runtime.output = output;
+		runtime.error.render = null;
+	} catch (e) {
+		runtime.error.render = `Error rendering output: ${e.message}`;
+		runtime.output = "";
+		return;
+	}
+}
+
+// Preset management
+function copy_preset() {
+	const name = prompt("Enter a name for the new preset:");
+	if (!name) return;
+
+	const preset = cfg.presets[cfg.preset];
+	// presets are only one level deep, so no need to deep clone
+	cfg.presets[name] = {...preset};
+	cfg.preset = name;
+}
+
+function share_preset() {
+	const url = new URL(window.location.href);
+	url.searchParams.set("preset", btoa(JSON.stringify(cfg.presets[cfg.preset])));
+	prompt("Shareable URL:", url.toString());
+}
+
+function delete_preset() {
+	if (!confirm("Are you sure you want to delete this preset?")) return;
+	if (Object.keys(cfg.presets).length <= 1) {
+		alert("Cannot delete the last preset.");
+		return;
+	}
+
+	const old_active = cfg.preset;
+	let new_active = '';
+	for (const key in cfg.presets) {
+		if (key == cfg.preset) continue;
+		new_active = key;
+		break;
+	}
+	cfg.preset = new_active;
+	delete cfg.presets[old_active];
+}
+
+function import_preset(from_string = null) {
+	const url = new URL(from_string ?? window.location.href);
+	try {
+		const preset = JSON.parse(atob(url.searchParams.get('preset')))
+
+		if (['key_all', 'group_by', 'tpl_header', 'tpl_item', 'filters'].some(k => !(k in preset))) {
+			throw new Error('Invalid preset format');
+		}
+
+		const name = prompt('Importing preset, name?', preset.name)
+		if (!name) return
+		if (name in cfg.presets) {
+			if (!confirm(`Preset "${name}" already exists. Overwrite?`)) return
+		}
+
+		cfg.presets[name] = preset
+		cfg.preset = name
+	} catch (error) {
+		console.error(error)
+		alert('Failed to import preset: ' + error.message)
+	} finally {
+		// Remove the preset query parameter from the URL after importing
+		url.searchParams.delete('preset');
+		window.history.replaceState({}, document.title, url.toString());
+	}
+}
+
+function import_preset_from_string() {
+	const presetString = prompt('Paste the preset string to import:');
+	if (!presetString) return;
+	import_preset(presetString);
 }
 </script>
 
@@ -174,9 +246,10 @@ export default {
 				<select v-model="cfg.preset">
 					<option v-for="(preset, key) in cfg.presets" :key="key" :value="key">{{ key }}</option>
 				</select>
-				<button>Copy</button>
-				<button>Share</button>
-				<button>Delete</button>
+				<button @click="copy_preset">Copy</button>
+				<button @click="share_preset">Share</button>
+				<button @click="import_preset_from_string" v-if="runtime.standalone">Import</button>
+				<button @click="delete_preset" :disabled="Object.keys(cfg.presets).length <= 1">Delete</button>
 			</div>
 			<div class="qsrow">
 				<label for="key_all">Key for all items:</label>
