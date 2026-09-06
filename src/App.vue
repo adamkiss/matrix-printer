@@ -1,7 +1,7 @@
 <script setup>
 // Vue and stuff
 import {reactive, watch, nextTick, onMounted} from "vue";
-import HelloWorld from "./components/HelloWorld.vue";
+import CodeEditor from "./components/CodeEditor.vue";
 import TheWelcome from "./components/TheWelcome.vue";
 
 // Libs and utils
@@ -15,6 +15,7 @@ const miTem = setupMiTem();
 const runtime = reactive({
 	standalone: false,
 	filters: {},
+	inputLanguage: "csv",
 	parsed: null,
 	columns: [],
 	output: "",
@@ -93,8 +94,10 @@ function onInputChanged() {
 		return;
 	}
 
+	runtime.inputLanguage = meta.delimiter === "\t" ? "tsv" : "csv";
 	runtime.parsed = data;
 	runtime.columns = meta.fields;
+	console.log(runtime.parsed)
 }
 
 function onPresetChanged() {
@@ -119,10 +122,18 @@ function parseFilters() {
 
 // RENDER
 async function render() {
+	console.log("rendering...");
+
 	if (runtime.hasError) {
 		runtime.output = "";
 		return;
 	}
+
+	console.log("rendering with", {
+		preset: cfg.presets[cfg.preset],
+		parsed: runtime.parsed,
+		filters: runtime.filters,
+	});
 
 	try {
 		const p = cfg.presets[cfg.preset];
@@ -155,6 +166,8 @@ async function render() {
 				return [header, ...items].join("\n");
 			})
 			.join("\n\n");
+
+		console.log("rendered output:", output);
 
 		runtime.output = output;
 		runtime.error.render = null;
@@ -261,26 +274,26 @@ function import_preset_from_string() {
 					<option v-for="key in ['', ...runtime.columns]" :key="key" :value="key">{{ key }}</option>
 				</select>
 			</div>
-			<div class="qsrow">
-				<label for="tpl_header">Template header:</label>
-				<input id="tpl_header" v-model="cfg.presets[cfg.preset].tpl_header" />
+			<div>
+				<label class="block" for="tpl_header">Template header:</label>
+				<code-editor class="w-full h-full" v-model="cfg.presets[cfg.preset].tpl_header" language="liquid" />
 			</div>
-			<div class="qsrow">
-				<label for="tpl_item">Template item:</label>
-				<input id="tpl_item" v-model="cfg.presets[cfg.preset].tpl_item" />
+			<div>
+				<label class="block" for="tpl_item">Template item:</label>
+				<code-editor class="w-full h-full" v-model="cfg.presets[cfg.preset].tpl_item" language="liquid" />
 			</div>
-			<div class="qsrow">
-				<label for="filters">Filters:</label>
-				<textarea id="filters" v-model="cfg.presets[cfg.preset].filters" rows="10"></textarea>
-				</div>
+			<div>
+				<label for="filters" class="block">Filters:</label>
+				<code-editor class="w-full h-full" v-model="cfg.presets[cfg.preset].filters" language="javascript" />
+			</div>
 			<button @click="__toggleIntro(true)">Open intro ({{ cfg.filters }})</button>
 		</section>
 		<section class="border-b-2 border-black/20">
-			<textarea class="w-full h-full" v-model="cfg.input"></textarea>
+			<code-editor class="w-full h-full" v-model="cfg.input" :language="runtime.inputLanguage" />
 		</section>
 		<section>
 			<div class="bg-red-500 text-white absolute inset-x-4 top-4" v-if="runtime.error.render">{{ runtime.error.render }}</div>
-			<textarea class="w-full h-full" v-model="runtime.output" readonly></textarea>
+			<code-editor class="w-full h-full" v-model="runtime.output" readonly />
 		</section>
 	</main>
 
