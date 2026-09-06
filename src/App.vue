@@ -1,53 +1,237 @@
 <script setup>
+// Vue and stuff
+import {reactive, watch, nextTick, onMounted} from "vue";
 import HelloWorld from "./components/HelloWorld.vue";
 import TheWelcome from "./components/TheWelcome.vue";
+
+// Libs and utils
+import { loadFromLocalStorage } from "./lib/utils.js";
+import setupMiTem from './lib/mitem.js';
+import Papa from 'papaparse';
+import { DEFAULT_CONFIG, LOCAL_STORAGE_KEY } from "./lib/defaults.js";
+
+// State
+const miTem = setupMiTem();
+const runtime = reactive({
+	filters: {},
+	parsed: null,
+	columns: [],
+	output: "",
+	error: {
+		input: null,
+		filters: null,
+		parse: null,
+		render: null,
+	},
+	get hasError() {
+		return Object.values(this.error).some(v => v);
+	},
+	get firstError() {
+		for (const [key, value] of Object.entries(this.error)) {
+			if (value) return { key, value };
+		}
+		return null;
+	},
+});
+const cfg = reactive({
+	...DEFAULT_CONFIG
+});
+
+// Event listeners
+watch(cfg, _ => {
+	cfg.default = false;
+	localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cfg));
+}, { deep: true });
+watch(_ => cfg.input, _ => onInputChanged());
+watch(_ => cfg.preset, _ => onPresetChanged());
+watch(_ => cfg.presets[cfg.preset], _ => onPresetChanged(), { deep: true });
+watch(_ => runtime.parsed, async _ => await render());
+
+// Methods
+onMounted(() => {
+	const ls = loadFromLocalStorage(LOCAL_STORAGE_KEY);
+	for (const key in ls) { cfg[key] = ls[key]; }
+
+	q("#welcome").classList.remove("hidden");
+	const introcloser = q('#intro').addEventListener('click', e => {
+		if (e.target !== e.currentTarget) return;
+		toggleIntro(false);
+	});
+	nextTick(_ => {
+		const i = toggleIntro(Object.entries(ls).length === 0);
+		i.classList.add("transition-opacity", "duration-300");
+		i.classList.remove("in-[.js]:hidden");
+	});
+
+	onInputChanged();
+	onPresetChanged();
+});
+
+function onInputChanged() {
+	const {data, errors, meta} = Papa.parse(cfg.input, {
+		header: true,
+		skipEmptyLines: true,
+		dynamicTyping: true,
+	});
+
+	if (errors.length > 0) {
+		const e = errors[0];
+		runtime.error.parse = `Error in row ${e.row}: ${e.message}`;
+		runtime.parsed = null;
+		runtime.columns = [];
+		return;
+	}
+
+	runtime.parsed = data;
+	runtime.columns = meta.fields;
+}
+
+function onPresetChanged() {
+	parseFilters();
+	render();
+}
+
+function parseFilters() {
+	try {
+		const preset = cfg.presets[cfg.preset];
+		runtime.filters = eval(`(${preset.filters})`);
+		miTem.filters = Object.assign(
+			{},
+			miTem.defaultFilters,
+			runtime.filters
+		);
+		runtime.error.filters = null;
+	} catch (e) {
+		runtime.error.filters = `Error parsing filters: ${e.message}`;
+	}
+}
+
+
+// RENDER
+async function render() {
+		if (runtime.hasError) {
+			runtime.output = "";
+			return;
+		}
+
+		try {
+			const p = cfg.presets[cfg.preset];
+			const tplh = miTem.compile(p.tpl_header);
+			const tpli = miTem.compile(p.tpl_item);
+
+			const r = await Promise.all(
+				runtime.parsed.map(async (row) => {
+					const rendered = tpli(row);
+					return { row, rendered };
+				}),
+			);
+
+			if (p.group_by === "") {
+				runtime.output = r.map(({ rendered }) => rendered).join("\n");
+				runtime.error.render = null;
+				return;
+			}
+
+			const grouped = r.reduce((acc, { row, rendered }) => {
+				const groupKey = row[p.group_by] ?? p.key_all;
+				if (!acc[groupKey]) acc[groupKey] = [];
+				acc[groupKey].push(rendered);
+				return acc;
+			}, {});
+
+			const output = Object.entries(grouped)
+				.map(([group, items]) => {
+					const header = tplh({ group });
+					return [header, ...items].join("\n");
+				})
+				.join("\n\n");
+
+			runtime.output = output;
+			runtime.error.render = null;
+		} catch (e) {
+			runtime.error.render = `Error rendering output: ${e.message}`;
+			runtime.output = "";
+			return;
+		}
+	}
+</script>
+
+<script>
+export default {
+
+}
 </script>
 
 <template>
-	<header>
-		<img
-			alt="Vue logo"
-			class="logo"
-			src="./assets/logo.svg"
-			width="125"
-			height="125"
-		/>
+	<main class="w-full min-h-dvh grid grid-cols-2">
+		<section class="row-span-2 border-r-2 border-black/20 flex flex-col *:py-4 *:px-8 divide-y divide-black/10">
+			<header class="flex items-center justify-between">
+				<h1>Matrix printer</h1>
+				<button @click="__toggleIntro(true)">About</button>
+			</header>
 
-		<div class="wrapper">
-			<HelloWorld msg="You did it!" />
-		</div>
-	</header>
-
-	<main>
-		<TheWelcome />
+			<div class="flex gap-2">
+				<select v-model="cfg.preset">
+					<option v-for="(preset, key) in cfg.presets" :key="key" :value="key">{{ key }}</option>
+				</select>
+				<button>Copy</button>
+				<button>Share</button>
+				<button>Delete</button>
+			</div>
+			<div class="qsrow">
+				<label for="key_all">Key for all items:</label>
+				<input id="key_all" v-model="cfg.presets[cfg.preset].key_all" />
+			</div>
+			<div class="qsrow">
+				<label for="group_by">Group by:</label>
+				<select v-model="cfg.presets[cfg.preset].group_by">
+					<option v-for="key in ['', ...runtime.columns]" :key="key" :value="key">{{ key }}</option>
+				</select>
+			</div>
+			<div class="qsrow">
+				<label for="tpl_header">Template header:</label>
+				<input id="tpl_header" v-model="cfg.presets[cfg.preset].tpl_header" />
+			</div>
+			<div class="qsrow">
+				<label for="tpl_item">Template item:</label>
+				<input id="tpl_item" v-model="cfg.presets[cfg.preset].tpl_item" />
+			</div>
+			<div class="qsrow">
+				<label for="filters">Filters:</label>
+				<textarea id="filters" v-model="cfg.presets[cfg.preset].filters" rows="10"></textarea>
+				</div>
+			<button @click="__toggleIntro(true)">Open intro ({{ cfg.filters }})</button>
+		</section>
+		<section class="border-b-2 border-black/20">
+			<textarea class="w-full h-full" v-model="cfg.input"></textarea>
+		</section>
+		<section>
+			<div class="bg-red-500 text-white absolute inset-x-4 top-4" v-if="runtime.error.render">{{ runtime.error.render }}</div>
+			<textarea class="w-full h-full" v-model="runtime.output" readonly></textarea>
+		</section>
 	</main>
+
+	<Teleport to="#welcome">
+		<button @click="__toggleIntro(false)">Open the app</button>
+		<button @click="cfg.filters = 'a'">Set to A</button>
+		<button @click="cfg.filters = 'b'">Set to B</button>
+	</Teleport>
 </template>
 
 <style scoped>
-header {
-	line-height: 1.5;
+.qsrow {
+	display: flex;
+	gap: 1rem;
+}
+.qsrow label {
+	width: 10rem;
+}
+.qsrow input,
+.qsrow textarea {
+	flex: 1;
 }
 
-.logo {
-	display: block;
-	margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-	header {
-		display: flex;
-		place-items: center;
-		padding-right: calc(var(--section-gap) / 2);
-	}
-
-	.logo {
-		margin: 0 2rem 0 0;
-	}
-
-	header .wrapper {
-		display: flex;
-		place-items: flex-start;
-		flex-wrap: wrap;
-	}
+section {
+	position: relative;
 }
 </style>

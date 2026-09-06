@@ -1,0 +1,49 @@
+@import "tailwindcss";
+@source "../..";
+
+@theme {
+	--breakpoint-xs: 400px;
+
+	/* Utopia config: lost */
+	--step--2: clamp(0.6877rem, 0.9392rem + -0.2515vw, 0.8889rem);
+	--step--1: clamp(0.9724rem, 1.0069rem + -0.0345vw, 1rem);
+	--step-0: clamp(1.125rem, 1.0625rem + 0.3125vw, 1.375rem);
+	--step-1: clamp(1.2656rem, 1.096rem + 0.8483vw, 1.9443rem);
+	--step-2: clamp(1.4238rem, 1.0925rem + 1.6567vw, 2.7492rem);
+	--step-3: clamp(1.6018rem, 1.0304rem + 2.8569vw, 3.8873rem);
+	--step-4: clamp(1.802rem, 0.8784rem + 4.6183vw, 5.4967rem);
+
+	--spacing: calc(var(--step-0) / 4);
+
+	--text-base: calc(var(--step-0) * 1);
+	--text-base--line-height: calc(var(--spacing) * 6);
+	--spacing-lh: var(--text-base--line-height);
+
+	--text-lg: calc(var(--step-0) * 1.6);
+	--text-lg--line-height: calc(var(--spacing) * 6);
+
+	--text-xl: calc(var(--step-0) * 2.4);
+	--text-xl--line-height: calc(var(--spacing) * 7);
+
+	--color-gray-50:  var(--color-neutral-50);
+	--color-gray-100: var(--color-neutral-100);
+	--color-gray-200: var(--color-neutral-200);
+	--color-gray-300: var(--color-neutral-300);
+	--color-gray-400: var(--color-neutral-400);
+	--color-gray-500: var(--color-neutral-500);
+	--color-gray-600: var(--color-neutral-600);
+	--color-gray-700: var(--color-neutral-700);
+	--color-gray-800: var(--color-neutral-800);
+	--color-gray-850: color-mix(in lab, var(--color-gray-800) 80%, var(--color-gray-900));
+	--color-gray-900: var(--color-neutral-900);
+	--color-gray-950: var(--color-neutral-950);
+
+	--color-toxic: oklch(95.7% 0.238 111.18);
+}
+
+:root {
+	color-scheme: light dark;
+}
+body {
+	scroll-behavior: smooth;
+}
