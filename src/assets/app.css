@@ -1,8 +1,19 @@
 @import "tailwindcss";
 @source "../..";
+@plugin '@tailwindcss/forms';
+
+@font-face {
+	font-family: "franklin";
+	font-weight: 1 1000;
+	font-stretch: 60% 120%;
+	src: url(http://lak.test/assets/franklin-subset-ZkB2T03E.woff2) format("woff2");
+}
+
 
 @theme {
 	--breakpoint-xs: 400px;
+
+	--font-sans: 'franklin', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
 	/* Utopia config: lost */
 	--step--2: clamp(0.6877rem, 0.9392rem + -0.2515vw, 0.8889rem);
@@ -39,6 +50,9 @@
 	--color-gray-950: var(--color-neutral-950);
 
 	--color-toxic: oklch(95.7% 0.238 111.18);
+
+	/** special spacing for collapsed grid */
+	--spacing-lh-5dvh: calc(var(--spacing) * 6 + 5dvh + 2px);
 }
 
 :root {
@@ -47,3 +61,69 @@
 body {
 	scroll-behavior: smooth;
 }
+
+@layer components {
+	button {
+		@apply px-1 rounded-sm text-sm border border-gray-400 dark:border-gray-600 bg-gray-100 dark:bg-gray-900 text-black dark:text-white disabled:opacity-40;
+	}
+	select {
+		@apply appearance-none w-full px-1 py-1 rounded-sm text-sm border border-gray-400 dark:border-gray-600 bg-gray-100 dark:bg-gray-900 text-black dark:text-white disabled:opacity-40 ;
+	}
+	input[type="text"] {
+		@apply w-full px-1 py-1 rounded-sm text-sm border border-gray-400 dark:border-gray-600 bg-gray-100 dark:bg-gray-900 text-black dark:text-white disabled:opacity-40;
+	}
+	label {
+		@apply font-medium tracking-wide block text-sm px-2 py-1;
+	}
+}
+
+@layer utilities {
+	.grid-app {
+		gap: 2px;
+		background: light-dark(var(--color-gray-300), --alpha(var(--color-gray-700) / 80%));
+		grid-template-columns: 1fr;
+		grid-template-areas:
+			"config-header"
+			"config"
+			"input-header"
+			"input"
+			"output-header"
+			"output";
+		@media (width >= theme('breakpoint-md')) {
+			grid-template-columns: max(400px, 60%) 1fr;
+			grid-template-rows: var(--text-base--line-height) 1fr var(--text-base--line-height) 1fr;
+			grid-template-areas:
+				"config-header input-header"
+				"config input"
+				"config output-header"
+				"config output";
+
+			&[data-expanded] {
+				grid-template-columns: 10% 90%;
+				.grid-area-config:after {
+					content: " ";
+					display: block;
+					position: absolute;
+					inset: 0;
+					z-index: 20;
+					pointer-events: none;
+
+				}
+				.grid-area-config, .grid-area-config-header {
+					overflow: hidden;
+				}
+			}
+			&[data-expanded="input"] {
+				grid-template-rows: var(--text-base--line-height) 1fr var(--text-base--line-height) 5dvh;
+			}
+			&[data-expanded="output"] {
+				grid-template-rows: var(--text-base--line-height) 5dvh var(--text-base--line-height) 1fr;
+			}
+		}
+	}
+}
+@utility grid-area-* {
+	position: relative;
+	grid-area: --value('config-header', 'config', 'input-header', 'input', 'output-header', 'output');
+}
+

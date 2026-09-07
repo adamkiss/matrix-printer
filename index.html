@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="en" class="no-js font-sans">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -26,19 +26,20 @@
 
 		<script>document.documentElement.classList.replace("no-js", "js");</script>
 	</head>
-	<body class="min-h-dvh bg-gray-200 text-black dark:bg-gray-950 dark:text-white">
+	<body class="min-h-dvh bg-gray-200 dark:bg-black text-black dark:text-white font-light">
 		<div id="intro" class="z-10 fixed inset-0 grid place-content-center bg-white/30 dark:bg-black/30 backdrop-blur-sm in-[.js]:hidden">
 			<section id="info" class="max-w-xl *:p-4 md:*:p-8 rounded-sm bg-gray-100 dark:bg-gray-900">
 				<div class="space-y-4 md:pb-4!">
-					<h1 class="text-lg font-bold text-toxic">Matrix Printer</h1>
-					<p>Matrix Printer is a tool that takes CSV, TSV or pasted data from Excel (delimiter is auto-detected), optionally groups it and formats it into continuous text using <a href="https://liquidjs.com/tutorials/intro-to-liquid.html" target="_blank">Liquid</a> filters and templates.
+					<h1 class="text-lg font-bold dark:text-toxic">Matrix Printer 2</h1>
+					<p>Matrix Printer is a tool that takes CSV, TSV or pasted data from Excel (delimiter is auto-detected), optionally groups it and formats it into continuous text using <a class="underline" href="https://liquidjs.com/tutorials/intro-to-liquid.html" target="_blank">Liquid</a>-like filters and templates.
 					</p>
-					<p>It's a simple way to generate reports, emails, or any other text-based output from structured this.data. Also a great way to programmatically markup tabular data.</p>
+					<p>It's a simple way to generate reports, emails, or any other text-based output from tabular data. Also a great way to programmatically markup tabular data.</p>
+
 					<noscript><p>You need to have Javascript enabled to run this app.</p></noscript>
 					<div id="welcome" class="hidden"></div>
 				</div>
 				<footer class="border-t border-t-black/10 dark:border-t-white/10">
-					<p class="text-smaller">&copy; 2026 <a href="https://adamkiss.com" target="_blank"> Adam Kiss</a>, <a href="https://github.com/adamkiss/matrix-printer" target="_blank">Source code available on GitHub</a></p>
+					<p class="text-smaller">&copy; 2026 <a class="underline" href="https://adamkiss.com" target="_blank"> Adam Kiss</a>, <a class="underline" href="https://github.com/adamkiss/matrix-printer" target="_blank">Source code available on GitHub</a></p>
 				</footer>
 			</section>
 		</div>

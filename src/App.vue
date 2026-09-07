@@ -1,9 +1,9 @@
 <script setup>
 // Vue and stuff
-import {reactive, watch, nextTick, onMounted} from "vue";
+import {ref, reactive, watch, nextTick, onMounted} from "vue";
 import CodeEditor from "./components/CodeEditor.vue";
 import ErrorMessage from "./components/ErrorMessage.vue";
-import TheWelcome from "./components/TheWelcome.vue";
+import SectionHeader from "./components/SectionHeader.vue";
 
 // Libs and utils
 import { loadFromLocalStorage } from "./lib/utils.js";
@@ -15,16 +15,22 @@ import { DEFAULT_CONFIG, LOCAL_STORAGE_KEY } from "./lib/defaults.js";
 const miTem = setupMiTem();
 const runtime = reactive({
 	standalone: false,
+	expanded: null,
+	aligned_columns: true,
+	copied: false,
+
 	filters: {},
 	inputLanguage: "csv",
 	parsed: null,
 	columns: [],
 	output: "",
+
 	error: {
 		input: null,
 		filters: null,
 		parse: null,
 		render: null,
+		copy: null,
 	},
 	get hasError() {
 		return Object.values(this.error).some(v => v);
@@ -39,6 +45,7 @@ const runtime = reactive({
 const cfg = reactive({
 	...DEFAULT_CONFIG
 });
+const grid = ref(null);
 
 // Event listeners
 watch(cfg, _ => {
@@ -95,10 +102,10 @@ function onInputChanged() {
 		return;
 	}
 
+	runtime.error.parse = null;
 	runtime.inputLanguage = meta.delimiter === "\t" ? "tsv" : "csv";
 	runtime.parsed = data;
 	runtime.columns = meta.fields;
-	console.log(runtime.parsed)
 }
 
 function onPresetChanged() {
@@ -123,18 +130,10 @@ function parseFilters() {
 
 // RENDER
 async function render() {
-	console.log("rendering...");
-
 	if (runtime.hasError) {
-		runtime.output = "";
+		// runtime.output = "";
 		return;
 	}
-
-	console.log("rendering with", {
-		preset: cfg.presets[cfg.preset],
-		parsed: runtime.parsed,
-		filters: runtime.filters,
-	});
 
 	try {
 		const p = cfg.presets[cfg.preset];
@@ -167,8 +166,6 @@ async function render() {
 				return [header, ...items].join("\n");
 			})
 			.join("\n\n");
-
-		console.log("rendered output:", output);
 
 		runtime.output = output;
 		runtime.error.render = null;
@@ -246,81 +243,122 @@ function import_preset_from_string() {
 	if (!presetString) return;
 	import_preset(presetString);
 }
+
+function toggle_expand(toggle_to = false) {
+	runtime.expanded = (runtime.expanded === toggle_to)
+		? null
+		: toggle_to;
+}
+
+async function copy_to_clipboard() {
+	try {
+		await navigator.clipboard.writeText(runtime.output)
+		runtime.copied = true;
+	} catch (e) {
+		runtime.error.copy = `Failed to copy: ${e.message}`;
+	} finally {
+		setTimeout(() => {
+			runtime.copied = false
+			runtime.error.copy = null
+		}, 2000)
+	}
+}
+
+function align_input_columns() {
+	runtime.aligned_columns = !runtime.aligned_columns;
+}
 </script>
 
 <template>
-	<main class="w-full min-h-dvh grid grid-cols-2">
-		<section class="row-span-2 border-r-2 border-black/20 flex flex-col *:py-4 *:px-8 divide-y divide-black/10">
-			<header class="flex items-center justify-between">
-				<h1>Matrix printer</h1>
+	<main class="w-full h-dvh grid grid-app" :data-expanded="runtime.expanded">
+		<section class="contents">
+			<!-- ABOUT -->
+			<section-header class="grid-area-config-header md:min-w-[600px]">
+				<h1 class="font-bold tracking-wide">Matrix printer</h1>
 				<button @click="__toggleIntro(true)">About</button>
-			</header>
+			</section-header>
+			<!-- CONFIG -->
+			<div class="grid-area-config bg-gray-200 dark:bg-gray-950">
+				<div class="min-h-full overflow-y-scroll flex flex-col divide-y divide-gray-300 dark:divide-gray-800 md:min-w-[600px]">
+					<label for="preset" class="w-full">Preset:</label>
+					<div class="p-2 flex gap-2">
+						<select v-model="cfg.preset" name="preset" id="preset">
+							<option v-for="(preset, key) in cfg.presets" :key="key" :value="key">{{ key }}</option>
+						</select>
+						<button @click="copy_preset">Copy</button>
+						<button @click="share_preset">Share</button>
+						<button @click="import_preset_from_string" v-if="runtime.standalone">Import</button>
+						<button @click="delete_preset" :disabled="Object.keys(cfg.presets).length <= 1">Delete</button>
+					</div>
+					<div class="grid grid-cols-2 divide-x divide-gray-300 dark:divide-gray-800">
+						<div class="px-2 pb-2">
+							<label for="key_all" class="-mx-2 pb-2">Key for all row items (as an array):</label>
+							<input type="text" id="key_all" v-model="cfg.presets[cfg.preset].key_all" />
+						</div>
+						<div class="px-2 pb-2">
+							<label for="group_by" class="-mx-2 pb-2">Group rows by:</label>
+							<select v-model="cfg.presets[cfg.preset].group_by">
+								<option v-for="key in ['', ...runtime.columns]" :key="key" :value="key">{{ key || "--"}}</option>
+							</select>
+						</div>
+					</div>
+					<div>
+						<label class="block" for="tpl_header">Template header:</label>
+						<code-editor class="w-full h-full" v-model="cfg.presets[cfg.preset].tpl_header" language="liquid" />
+					</div>
+					<div>
+						<label class="block" for="tpl_item">Template item:</label>
+						<code-editor class="w-full h-full" v-model="cfg.presets[cfg.preset].tpl_item" language="liquid" />
+					</div>
+					<div class="relative grow">
+						<label for="filters" class="block">Filters:</label>
+						<error-message :message="runtime.error.filters" />
+						<code-editor class="w-full h-full" v-model="cfg.presets[cfg.preset].filters" language="javascript" />
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- INPUT -->
+		<section class="contents">
+			<section-header class="grid-area-input-header">
+				<h1 class="font-bold tracking-wide">Input</h1>
+				<button @click="align_input_columns()" :disabled="runtime.error.parse">{{ runtime.aligned_columns ? '✔ Aligned columns' : 'Align columns (readonly)' }}</button>
+				<span class="grow"> </span>
+				<button @click="toggle_expand('input')">{{ runtime.expanded === 'input' ? 'Collapse' : 'Expand' }}</button>
+			</section-header>
+			<div class="grid-area-input bg-gray-200 dark:bg-gray-950 relative overflow-y-scroll">
+				<error-message :message="runtime.error.parse" />
+				<code-editor class="w-full h-full" v-model="cfg.input" :language="runtime.inputLanguage" :word-wrap="false" :readonly="runtime.aligned_columns" :data-aligned="runtime.aligned_columns" />
+			</div>
+		</section>
+		<!-- OUTPUT -->
+		<section class="contents">
+			<section-header class="grid-area-output-header">
+				<h1 class="font-bold tracking-wide">Output</h1>
+				<button @click="copy_to_clipboard()" :disabled="runtime.copied || runtime.error.copy">{{ runtime.copied ? 'OK, Copied' : 'Copy' }}</button>
+				<span class="grow"> </span>
+				<button @click="toggle_expand('output')">{{ runtime.expanded === 'output' ? 'Collapse' : 'Expand' }}</button>
+			</section-header>
+			<div class="grid-area-output bg-gray-200 dark:bg-gray-950 relative overflow-y-scroll">
+				<error-message :message="runtime.error.render" />
+				<error-message :message="runtime.error.copy" />
+				<code-editor class="w-full h-full" v-model="runtime.output" readonly :line-numbers="false" />
+			</div>
+		</section>
 
-			<div class="flex gap-2">
-				<select v-model="cfg.preset">
-					<option v-for="(preset, key) in cfg.presets" :key="key" :value="key">{{ key }}</option>
-				</select>
-				<button @click="copy_preset">Copy</button>
-				<button @click="share_preset">Share</button>
-				<button @click="import_preset_from_string" v-if="runtime.standalone">Import</button>
-				<button @click="delete_preset" :disabled="Object.keys(cfg.presets).length <= 1">Delete</button>
-			</div>
-			<div class="qsrow">
-				<label for="key_all">Key for all items:</label>
-				<input id="key_all" v-model="cfg.presets[cfg.preset].key_all" />
-			</div>
-			<div class="qsrow">
-				<label for="group_by">Group by:</label>
-				<select v-model="cfg.presets[cfg.preset].group_by">
-					<option v-for="key in ['', ...runtime.columns]" :key="key" :value="key">{{ key }}</option>
-				</select>
-			</div>
-			<div>
-				<label class="block" for="tpl_header">Template header:</label>
-				<code-editor class="w-full h-full" v-model="cfg.presets[cfg.preset].tpl_header" language="liquid" />
-			</div>
-			<div>
-				<label class="block" for="tpl_item">Template item:</label>
-				<code-editor class="w-full h-full" v-model="cfg.presets[cfg.preset].tpl_item" language="liquid" />
-			</div>
-			<div class="relative">
-				<label for="filters" class="block">Filters:</label>
-				<error-message :message="runtime.error.filters" />
-				<code-editor class="w-full h-full" v-model="cfg.presets[cfg.preset].filters" language="javascript" />
-			</div>
-			<button @click="__toggleIntro(true)">Open intro ({{ cfg.filters }})</button>
-		</section>
-		<section class="border-b-2 border-black/20">
-			<error-message :message="runtime.error.parse" />
-			<code-editor class="w-full h-full" v-model="cfg.input" :language="runtime.inputLanguage" />
-		</section>
-		<section>
-			<error-message :message="runtime.error.render" />
-			<code-editor class="w-full h-full" v-model="runtime.output" readonly />
-		</section>
+		<!-- Gradient zones when input/output is expanded -->
+		<div
+			class="fixed top-0 left-[10%] right-0 h-lh-5dvh bg-linear-to-b from-gray-500/0 to-gray-200 dark:to-black/80"
+			@click="toggle_expand('input')" v-show="runtime.expanded === 'output'">
+		</div>
+		<div
+			class="fixed bottom-0 left-[10%] right-0 h-lh-5dvh bg-linear-to-t from-gray-200/2 to-gray-200 dark:from-black/20  dark:to-black/80"
+			@click="toggle_expand('output')" v-show="runtime.expanded === 'input'">
+		</div>
+		<div class="fixed inset-y-0 left-0 w-[10%] bg-linear-to-r from-gray-500/0 to-gray-200 dark:to-black/40" @click="toggle_expand(null)" v-show="runtime.expanded"></div>
 	</main>
 
 	<Teleport to="#welcome">
-		<button @click="__toggleIntro(false)">Open the app</button>
-		<button @click="cfg.filters = 'a'">Set to A</button>
-		<button @click="cfg.filters = 'b'">Set to B</button>
+		<button @click="__toggleIntro(false)">Open the Matrix Printer</button>
 	</Teleport>
 </template>
-
-<style scoped>
-.qsrow {
-	display: flex;
-	gap: 1rem;
-}
-.qsrow label {
-	width: 10rem;
-}
-.qsrow input,
-.qsrow textarea {
-	flex: 1;
-}
-
-section {
-	position: relative;
-}
-</style>

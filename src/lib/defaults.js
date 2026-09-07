@@ -11,7 +11,7 @@ Slipknot 	Jay	Weinberg`,
 		Default: {
 			key_all: "_all",
 			group_by: "band",
-			tpl_header: "# {{ group }}",
+			tpl_header: "\n# {{ group }}",
 			tpl_item: "- {{ name | lower }} {{ surname | upper }}",
 			filters: `{
 	lower: v => v.toLowerCase(),

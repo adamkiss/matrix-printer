@@ -5,5 +5,5 @@ const {message} = defineProps({
 </script>
 
 <template>
-	<div class="bg-red-500 text-white absolute inset-x-4 top-4" v-if="message">{{ message }}</div>
+	<div class=" z-50 bg-red-500/80 dark:bg-red-500/80 backdrop-blur-lg  text-white absolute inset-x-2 top-2 p-2" v-if="message">{{ message }}</div>
 </template>
