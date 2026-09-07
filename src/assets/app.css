@@ -3,17 +3,17 @@
 @plugin '@tailwindcss/forms';
 
 @font-face {
-	font-family: "franklin";
+	font-family: "custom";
 	font-weight: 1 1000;
 	font-stretch: 60% 120%;
-	src: url(http://lak.test/assets/franklin-subset-ZkB2T03E.woff2) format("woff2");
+	src: url(font-ZkB2T03E.woff2) format("woff2");
 }
 
 
 @theme {
 	--breakpoint-xs: 400px;
 
-	--font-sans: 'franklin', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+	--font-sans: 'custom', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
 	/* Utopia config: lost */
 	--step--2: clamp(0.6877rem, 0.9392rem + -0.2515vw, 0.8889rem);
