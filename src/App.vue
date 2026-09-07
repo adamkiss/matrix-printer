@@ -2,6 +2,7 @@
 // Vue and stuff
 import {reactive, watch, nextTick, onMounted} from "vue";
 import CodeEditor from "./components/CodeEditor.vue";
+import ErrorMessage from "./components/ErrorMessage.vue";
 import TheWelcome from "./components/TheWelcome.vue";
 
 // Libs and utils
@@ -282,17 +283,19 @@ function import_preset_from_string() {
 				<label class="block" for="tpl_item">Template item:</label>
 				<code-editor class="w-full h-full" v-model="cfg.presets[cfg.preset].tpl_item" language="liquid" />
 			</div>
-			<div>
+			<div class="relative">
 				<label for="filters" class="block">Filters:</label>
+				<error-message :message="runtime.error.filters" />
 				<code-editor class="w-full h-full" v-model="cfg.presets[cfg.preset].filters" language="javascript" />
 			</div>
 			<button @click="__toggleIntro(true)">Open intro ({{ cfg.filters }})</button>
 		</section>
 		<section class="border-b-2 border-black/20">
+			<error-message :message="runtime.error.parse" />
 			<code-editor class="w-full h-full" v-model="cfg.input" :language="runtime.inputLanguage" />
 		</section>
 		<section>
-			<div class="bg-red-500 text-white absolute inset-x-4 top-4" v-if="runtime.error.render">{{ runtime.error.render }}</div>
+			<error-message :message="runtime.error.render" />
 			<code-editor class="w-full h-full" v-model="runtime.output" readonly />
 		</section>
 	</main>
