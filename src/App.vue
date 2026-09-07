@@ -305,11 +305,11 @@ function align_input_columns() {
 					</div>
 					<div>
 						<label class="block" for="tpl_header">Template header:</label>
-						<code-editor class="w-full h-full" v-model="cfg.presets[cfg.preset].tpl_header" language="liquid" />
+						<code-editor class="font-mono w-full h-full" v-model="cfg.presets[cfg.preset].tpl_header" language="liquid" />
 					</div>
 					<div>
 						<label class="block" for="tpl_item">Template item:</label>
-						<code-editor class="w-full h-full" v-model="cfg.presets[cfg.preset].tpl_item" language="liquid" />
+						<code-editor class="font-mono w-full h-full" v-model="cfg.presets[cfg.preset].tpl_item" language="liquid" />
 					</div>
 					<div class="relative grow">
 						<label for="filters" class="block">Filters:</label>
