@@ -10,6 +10,17 @@ prod () { #: generate dist files
 	npm run build
 }
 
+deploy() { #: deploy to github pages
+	./task prod
+	cd dist || exit
+	git init
+	git add .
+	git commit -m "Build: $(date '+%Y-%m-%d %H:%M')"
+	git remote add origin git@github.com:adamkiss/matrix-printer.git
+	git push --force origin gh-pages
+	rm -rf .git
+	cd ..
+}
 
 #
 # BOILERPLATE
