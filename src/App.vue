@@ -16,7 +16,7 @@ const miTem = setupMiTem();
 const runtime = reactive({
 	standalone: false,
 	expanded: null,
-	aligned_columns: true,
+	aligned_columns: false,
 	copied: false,
 
 	filters: {},
@@ -116,7 +116,8 @@ function onPresetChanged() {
 function parseFilters() {
 	try {
 		const preset = cfg.presets[cfg.preset];
-		runtime.filters = eval(`(${preset.filters})`);
+		// https://rolldown.rs/guide/troubleshooting#avoiding-direct-eval
+		runtime.filters = (0, eval)(`(${preset.filters})`);
 		miTem.filters = Object.assign(
 			{},
 			miTem.defaultFilters,
@@ -322,7 +323,7 @@ function align_input_columns() {
 		<section class="contents">
 			<section-header class="grid-area-input-header">
 				<h1 class="font-bold tracking-wide">Input</h1>
-				<button @click="align_input_columns()" :disabled="runtime.error.parse">{{ runtime.aligned_columns ? '✔ Aligned columns' : 'Align columns (readonly)' }}</button>
+				<button @click="align_input_columns()" :disabled="runtime.error.parse">{{ runtime.aligned_columns ? '✔ Aligned columns (readonly mode)' : 'Align columns (readonly)' }}</button>
 				<span class="grow"> </span>
 				<button @click="toggle_expand('input')">{{ runtime.expanded === 'input' ? 'Collapse' : 'Expand' }}</button>
 			</section-header>

@@ -66,13 +66,13 @@ export default function setupMiTem () {
 
   miTem.filters = Object.assign({}, miTem.defaultFilters);
 
-  if (typeof module !== 'undefined' && module.exports) {
-    module.exports = miTem;
-  } else if (typeof define === 'function' && define.amd) {
-    define(() => miTem);
-  } else {
-    window.miTem = miTem;
-  }
+//   if (typeof module !== 'undefined' && module.exports) {
+//     module.exports = miTem;
+//   } else if (typeof define === 'function' && define.amd) {
+//     define(() => miTem);
+//   } else {
+//     window.miTem = miTem;
+//   }
 
   miTem.processFilters = (expression) => {
     const lexemes = expression.trim().split('|');
