@@ -166,7 +166,7 @@ async function render() {
 				const header = tplh({ group });
 				return [header, ...items].join("\n");
 			})
-			.join("\n\n");
+			.join("\n");
 
 		runtime.output = output;
 		runtime.error.render = null;
