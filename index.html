@@ -629,12 +629,12 @@
 						} else {
 							const grouped = rendered.reduce((r, item) => {
 								const key = item.row[groupBy]
-								r[key] = [...r[key] || [], item.rendered]
+								r.set(key, [...(r.get(key) || []), item.rendered])
 								return r
-							}, {})
+							}, new Map())
 
-							this.output = Object.keys(grouped)
-								.map(key => `# ${key}:\n${grouped[key].join('\n')}`)
+							this.output = [...grouped.entries()]
+								.map(([key, rows]) => `# ${key}:\n${rows.join('\n')}`)
 								.join('\n\n')
 
 						}
