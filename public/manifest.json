@@ -1,0 +1,25 @@
+{
+	"short_name": "MP",
+	"name": "Matrix Printer",
+	"icons": [
+		{
+			"src": "/icon-180.png",
+			"sizes": "180x180",
+			"type": "image/png"
+		},
+		{
+			"src": "/icon-256.png",
+			"sizes": "256x256",
+			"type": "image/png"
+		},
+		{
+			"src": "/icon-1024.png",
+			"sizes": "1024x1024",
+			"type": "image/png"
+		}
+	],
+	"start_url": ".",
+	"display": "standalone",
+	"theme_color": "#f8fc00",
+	"background_color": "#f8fc00"
+}
