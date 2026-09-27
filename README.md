@@ -1,8 +1,6 @@
-[<h1 style="text-align:center">Matrix Printer</h1>](https://matrix-printer.adamkiss.com)
+<p align="center"><a href="https://matrix-printer.adamkiss.com" target="_blank"><img src="https://github.com/adamkiss/matrix-printer/blob/main/public/matrix-printer-meta.png?raw=true" alt="Titular image for Matrix Printer"></a></p>
 
-<img src="dist/matrix-printer-meta.png" alt="Titular image for Matrix Printer">
-
-## About
+# [Matrix Printer](https://matrix-printer.adamkiss.com)
 
 Matrix Printer is a tool that takes CSV, TSV or pasted data from Excel (delimiter is auto-detected), optionally groups it and formats it into continuous text using [Liquid](https://liquidjs.com/tutorials/intro-to-liquid.html)-like filters and templates.
 
