@@ -1,38 +1,27 @@
-# .
+<h1 style="text-align:center">[Matrix Printer](https://matrix-printer.adamkiss.com)</h1>
 
-This template should help get you started developing with Vue 3 in Vite.
+<img src="./dist/matrix-printer-meta.png" alt="Titular image for Matrix Printer">
 
-## Recommended IDE Setup
+Matrix Printer is a tool that takes CSV, TSV or pasted data from Excel (delimiter is auto-detected), optionally groups it and formats it into continuous text using [Liquid](https://liquidjs.com/tutorials/intro-to-liquid.html)-like filters and templates.
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+It's a simple way to generate reports, emails, or any other text-based output from structured data. Also a great way to programmatically markup tabular data.
 
-## Recommended Browser Setup
+## v2
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+Version 2 was released in 2026, is built using Vue 3, and features sharing presets between users.
 
-## Customize configuration
+## Development
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+```bash
+# Starts a local server for development
+$ ./task dev
 
-## Project Setup
+# Builds a production version
+$ ./task prod
 
-```sh
-npm install
+# Builds a production version and force pushes it
+# into `gh-pages` branch for deployment
+$ ./task deploy
 ```
 
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+&copy; 2024-2026 [Adam Kiss](https://adamkiss.com)
